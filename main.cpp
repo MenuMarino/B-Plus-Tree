@@ -2,6 +2,8 @@
 #include <iostream>
 #include "BPlusTree.h"
 
+using namespace std;
+
 int main() {
 
     typedef btree<int, 3>::iterator btree_iterator;
@@ -11,18 +13,22 @@ int main() {
         bt.insert(i);
     }
     bt.print();
-
     bt.print_leaves();
 
-    btree_iterator beg = bt.find(10);
-    btree_iterator end = bt.find(25);
+    // btree_iterator beg = bt.find(10);
+    // btree_iterator end = bt.find(25);
 
-    for (btree_iterator it = beg; it != end; it++) {
-        if (*it != 0) {
-            std::cout << *it << " ";
-        }
-    }
-    std::cout << "\n";
+    // for (btree_iterator it = beg; it != end; it++) {
+    //     if (*it != 0) {
+    //         cout << *it << " ";
+    //     }
+    // }
+    // cout << "\n";
+
+    bt.insert(-1);
+    bt.print();
+    bt.print_leaves();
+
 
     // Análisis Teórico:
         // RAM:

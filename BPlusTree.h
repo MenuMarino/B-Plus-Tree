@@ -131,6 +131,7 @@ public:
 
     btree() {
         root.isLeaf = true;
+        head = &root;
     }
     
     void insert(const T& value) {
@@ -139,28 +140,39 @@ public:
             // split root node
             split_root();
         }
+        if (head->children[0] != nullptr) {
+            // head->next = head->
+            head = head->children[0];
+
+            // auto oldHead = head;
+            // head = oldHead->children[0];
+            // head->next = oldHead->children[1];
+            // head->next->prev = head;
+            // head->next->next = oldHead->next;
+            // head->next->next->prev = head->next;
+        }
     }
 
-  void print() {
+    void print() {
     print(&root, 0);
     std::cout << "________________________\n\n";
   }
 
-  void print_leaves() {
-      node* leave = head;
-      while (leave) {
-          for (size_t i = 0; i < leave->count; ++i) {
-             std::cout << leave->data[i] << " ";
-          }
-          if (leave->next) {
-              std::cout << " <-> ";
-          }
-          leave = leave->next;
-      }
-      std::cout << "\n";
-  }
+    void print_leaves() {
+        node* leave = head;
+        while (leave) {
+            for (size_t i = 0; i < leave->count; ++i) {
+                std::cout << leave->data[i] << " ";
+            }
+            if (leave->next) {
+                std::cout << " <-> ";
+            }
+            leave = leave->next;
+        }
+        std::cout << "\n";
+    }
 
-  void print(node *ptr, int level) {
+    void print(node *ptr, int level) {
         if (ptr) {
             int i;
             for (i = ptr->count - 1; i >= 0; i--) {
@@ -177,7 +189,7 @@ public:
             }
             print(ptr->children[i + 1], level + 1);
         }
-  }
+    }
 
 private: 
     // 
