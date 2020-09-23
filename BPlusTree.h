@@ -140,23 +140,12 @@ public:
             // split root node
             split_root();
         }
-        if (head->children[0] != nullptr) {
-            // head->next = head->
-            head = head->children[0];
-
-            // auto oldHead = head;
-            // head = oldHead->children[0];
-            // head->next = oldHead->children[1];
-            // head->next->prev = head;
-            // head->next->next = oldHead->next;
-            // head->next->next->prev = head->next;
-        }
     }
 
     void print() {
-    print(&root, 0);
-    std::cout << "________________________\n\n";
-  }
+        print(&root, 0);
+        std::cout << "________________________\n\n";
+    }
 
     void print_leaves() {
         node* leave = head;
