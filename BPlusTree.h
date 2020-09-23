@@ -142,13 +142,28 @@ public:
         }
     }
 
+    void delete(const T& value) {
+        auto state = root.delete(value);
+        // no es solo eso
+        if (state == state_t::UNDERFLOW) {
+
+        }
+    }
+
     void print() {
         print(&root, 0);
         std::cout << "________________________\n\n";
     }
 
     void print_leaves() {
+
+        node* aux = &root;
+        while (aux->children[0] != nullptr) {
+            aux = aux->children[0];
+        }
+        head = aux;
         node* leave = head;
+
         while (leave) {
             for (size_t i = 0; i < leave->count; ++i) {
                 std::cout << leave->data[i] << " ";
