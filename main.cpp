@@ -29,6 +29,15 @@ int main() {
     bt.print();
     bt.print_leaves();
 
+    bt.remove(-1);
+    bt.insert(-2);
+    
+    bt.print();
+
+    bt.remove(1);
+    bt.remove(5);
+
+    bt.print();
 
     // Análisis Teórico:
         // RAM:

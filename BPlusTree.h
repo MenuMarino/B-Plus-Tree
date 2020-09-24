@@ -59,10 +59,12 @@ private:
             return this->count > ORDER ? OVERFLOW : B_OK;
         }
 
+        void remove(const T& value) {
+            
+        }
+
         void split(size_t position) {
             // leaf nodes / index nodes
-
-            // va a subir un nodo, asegurarse d q suba una copia nomas
 
             node* parent = this; 
             node* ptr = this->children[position];
@@ -114,12 +116,6 @@ private:
             if (ptr_prev) {
                 ptr_prev->next = child1;
             }
-
-            // update head
-            // FIXME: preguntarle a Ocsa como puedo updatear el head
-            // if (ptr == head) {
-            //     head = child1;
-            // }
             
             parent->insert_into(position, ptr->data[mid]); 
             parent->children[position] = child1;
@@ -142,12 +138,48 @@ public:
         }
     }
 
-    void delete(const T& value) {
-        auto state = root.delete(value);
-        // no es solo eso
-        if (state == state_t::UNDERFLOW) {
+    void remove(const T& value) {
+        iterator target_node = find(value);
+        size_t keys_count = target_node.ptr->count;
+        int index = target_node.index;
 
+        if (keys_count > (size_t)ORDER/2) { // more keys than min degree, caso 1
+            // std::cout << "target node contains more keys than min degree\n";
+            // std::cout << "parent of target node:\n\t";
+            // for (int i = 0; i < keys_count; ++i) {
+            //     std::cout << target_node.parent->data[i] << " ";
+            // }
+            // std::cout << "\n";
+            // std::cout << "target node:\n\t";
+            // for (int i = 0; i < keys_count; ++i) {
+            //     std::cout << target_node.ptr->data[i] << " ";
+            // }
+            // std::cout << "\n";
+            if (value == target_node.ptr->data[keys_count-1]) {
+                int parent_key_count = target_node.parent->count;
+                for (int i = 0; i < parent_key_count; ++i) {
+                    if (target_node.parent->data[i] == value) {
+                        target_node.parent->data[i] = target_node.ptr->data[keys_count-2];
+                    }
+                }
+                target_node.ptr->count -= 1;
+            } else { // caso 1b
+                for (int i = index; i < keys_count-1; ++i) {
+                    target_node.ptr->data[i] = target_node.ptr->data[i+1];
+                }
+                target_node.ptr->count -= 1;
+            }
+
+        } else { // keys == min degree
+            // std::cout << "target node contains minimum number of keys\n";
+            int parent_key_count = target_node.parent->count;
+            for (int i = 0; i < parent_key_count; ++i) {
+                if (target_node.parent->data[i] == value) {
+                    // target_node.parent->children[i]
+                }
+            }
         }
+
     }
 
     void print() {
@@ -247,9 +279,10 @@ public:
 
     struct iterator {
         node* ptr;
+        node* parent;
         size_t index;
 
-        iterator(node* ptr, size_t index): ptr{ptr}, index{index} {}
+        iterator(node* ptr, size_t index, node* parent = nullptr): ptr{ptr}, index{index}, parent{parent} {}
 
         iterator& operator++(int) {
             if (index < ptr->count) {
@@ -276,10 +309,10 @@ public:
     };
 
     iterator find(const T& value) {
-        return find_helper(&root, value);
+        return find_helper(&root, value, &root);
     }
 
-    iterator find_helper(node* ptr, const T& value) {
+    iterator find_helper(node* ptr, const T& value, node* ptr_parent) {
         size_t index = 0;
         while (ptr->data[index] < value && index < ptr->count) {
             ++index;
@@ -287,11 +320,11 @@ public:
 
         if (ptr->isLeaf) {
             if (index < ptr->count && ptr->data[index] == value) {
-                return iterator(ptr, index);
+                return iterator(ptr, index, ptr_parent);
             }
             return iterator(nullptr, 0);
         }
-        return find_helper(ptr->children[index], value);
+        return find_helper(ptr->children[index], value, ptr);
     }
 
 private:
