@@ -6,12 +6,16 @@ using namespace std;
 
 int main() {
 
-    // typedef btree<int, 3>::iterator btree_iterator;
+    typedef btree<int>::iterator btree_iterator;
+    ORDER = 3;
+    btree<int> bt;
+    for (size_t i = 0; i <= 30; i++) {
+        bt.insert(i);
+    }
 
-    // btree<int, 3> bt;
-    // for (size_t i = 0; i <= 30; i++) {
-    //     bt.insert(i);
-    // }
+    bt.print();
+    bt.in_order_print();
+
     // bt.print();
     // bt.print_leaves();
 
@@ -43,18 +47,18 @@ int main() {
         // RAM:
         // DISK:
 
-    int n;
-    std::cin >> n >> ORDER;
+    // int n;
+    // std::cin >> n >> ORDER;
 
-    btree<int> bt;
+    // btree<int> bt;
 
-    int e;
-    for (int i = 0; i < n; ++i) {
-        std::cin >> e;
-        bt.insert(e);
-    }
+    // int e;
+    // for (int i = 0; i < n; ++i) {
+    //     std::cin >> e;
+    //     bt.insert(e);
+    // }
 
-    bt.print();
+    // bt.in_order_print();
 
     return 0;
 }

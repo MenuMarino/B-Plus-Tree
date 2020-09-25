@@ -233,8 +233,22 @@ public:
         }
     }
 
+    void in_order_print() {
+        in_order_helper(&root);
+    }
+
 private: 
-    // 
+    void in_order_helper(node* ptr) {
+        if (!ptr)
+            return;
+
+        for (size_t i = 0; i < ptr->count; ++i) {
+            in_order_helper(ptr->children[i]);
+            std::cout << ptr->data[i] << ", ";
+        }
+        in_order_helper(ptr->children[ptr->count]);
+    }
+ 
     void split_root() {
         node* _root = &root;
         node* child1 = new node();
