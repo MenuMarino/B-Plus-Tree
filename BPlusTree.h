@@ -85,19 +85,23 @@ private:
             }
 
             size_t i = 0;
-            for (; i < ptr->count / 2; i++) {
+            for (; i < ptr->count / 2; i++) { // cambie aca
                 child1->children[i] = ptr->children[i];
                 child1->data[i] = ptr->data[i];
                 child1->count++;
             }
             child1->children[i] = ptr->children[i];
-            if (ptr->isLeaf) {
-                child1->data[i] = ptr->data[i];
-                child1->count++;
-            }
-            auto mid = i;
-            i += 1;
+
+            size_t mid = i;
+            i += 1; 
             size_t j = 0;
+            // B+
+            if (ptr->isLeaf) {
+                child2->data[j] = ptr->data[mid];
+                child2->count++;
+                ++j;
+            }
+            // B+
             for (; i < ptr->count; i++) {
                 child2->children[j] = ptr->children[i];
                 child2->data[j] = ptr->data[i];
@@ -119,7 +123,7 @@ private:
                 ptr_prev->next = child1;
             }
             
-            parent->insert_into(position, ptr->data[mid]); 
+            parent->insert_into(position, ptr->data[mid]);
             parent->children[position] = child1;
             parent->children[position + 1] = child2;
         }
@@ -207,7 +211,7 @@ public:
 
     void print() {
         print(&root, 0);
-        std::cout << "________________________\n\n";
+        // std::cout << "________________________\n\n";
     }
 
     void print(node *ptr, int level) {
@@ -217,7 +221,7 @@ public:
                 print(ptr->children[i + 1], level + 1);
 
                 for (int k = 0; k < level; k++) {
-                std::cout << "    ";
+                    std::cout << "    ";
                 }
                 if (ptr->isLeaf) {
                     std::cout << ptr->data[i] << /*"*" <<*/ "\n";
@@ -240,19 +244,25 @@ private:
             child2->isLeaf = true;
         }
         size_t i = 0;
-        for (; i < _root->count / 2; i++) {
+        for (; i < _root->count / 2; i++) { // cambie aca
             child1->children[i] = _root->children[i];
             child1->data[i] = _root->data[i];
             child1->count++;
         }
         child1->children[i] = _root->children[i];
-        if (_root->isLeaf) {
-            child1->data[i] = _root->data[i];
-            child1->count++;
-        }
+
         size_t mid = i;
         i += 1;
         size_t j = 0;
+
+        // B+
+        if (_root->isLeaf) {
+            child2->data[j] = _root->data[mid];
+            child2->count++;
+            ++j;
+        }
+        // B+
+
         for (; i < _root->count; i++) {
             child2->children[j] = _root->children[i];
             child2->data[j] = _root->data[i];
