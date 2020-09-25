@@ -4,7 +4,9 @@
 #include <vector>
 #include <iostream>
 
-template<typename T, int ORDER>
+int ORDER;
+
+template<typename T>
 // ahora es un B+
 class btree {
 private:
@@ -182,11 +184,6 @@ public:
 
     }
 
-    void print() {
-        print(&root, 0);
-        std::cout << "________________________\n\n";
-    }
-
     void print_leaves() {
 
         node* aux = &root;
@@ -208,6 +205,11 @@ public:
         std::cout << "\n";
     }
 
+    void print() {
+        print(&root, 0);
+        std::cout << "________________________\n\n";
+    }
+
     void print(node *ptr, int level) {
         if (ptr) {
             int i;
@@ -215,10 +217,10 @@ public:
                 print(ptr->children[i + 1], level + 1);
 
                 for (int k = 0; k < level; k++) {
-                std::cout << "\t";
+                std::cout << "    ";
                 }
                 if (ptr->isLeaf) {
-                    std::cout << ptr->data[i] << "*" << "\n";
+                    std::cout << ptr->data[i] << /*"*" <<*/ "\n";
                 } else {
                     std::cout << ptr->data[i] << "\n";
                 }
