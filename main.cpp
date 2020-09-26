@@ -9,12 +9,17 @@ int main() {
     typedef btree<int>::iterator btree_iterator;
     ORDER = 3;
     btree<int> bt;
-    for (size_t i = 0; i <= 30; i++) {
+    for (size_t i = 0; i <= 10; i++) {
         bt.insert(i);
     }
 
     bt.print();
-    bt.in_order_print();
+    bt.remove(1);
+    bt.remove(0);
+    cout << "==============================" << endl;
+    bt.print();
+    
+    // bt.in_order_print();
 
     // bt.print();
     // bt.print_leaves();

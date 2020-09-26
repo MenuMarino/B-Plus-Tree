@@ -3,3 +3,4 @@ a.out
 .idea/
 cmake-build-debug/
 .DS_Store
+CMakeLists.txt

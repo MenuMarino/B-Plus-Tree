@@ -148,6 +148,7 @@ public:
         iterator target_node = find(value);
         size_t keys_count = target_node.ptr->count;
         int index = target_node.index;
+        auto parent = target_node.parent;
 
         if (keys_count > (size_t)ORDER/2) { // more keys than min degree, caso 1
             // std::cout << "target node contains more keys than min degree\n";
@@ -178,12 +179,75 @@ public:
 
         } else { // keys == min degree
             // std::cout << "target node contains minimum number of keys\n";
-            int parent_key_count = target_node.parent->count;
-            for (int i = 0; i < parent_key_count; ++i) {
-                if (target_node.parent->data[i] == value) {
-                    // target_node.parent->children[i]
+            // int parent_key_count = target_node.parent->count;
+            // for (int i = 0; i < parent_key_count; ++i) {
+            //     if (target_node.parent->data[i] == value) {
+            //         // target_node.parent->children[i]
+            //     }
+            // }
+            // Vecino izquierdo caso 2a
+            if (index != 0) { // En caso tenga un hijo izquierdo
+                auto left = parent->children[index - 1];
+                // Si no puedo pedirle prestado, intento con la derecha
+                if (left->count <= (size_t) ORDER/2) { goto Right; } // y pueda pedirle prestado
+
+                T borrowed_value = left->data[left->count];
+                left->data[left->count] = 0; // valor nulo?
+                --left->count;
+
+                // Ponerlo en el padre
+                parent->data[index] = borrowed_value;
+
+                // Copiar los valores a un temp para reescribirlos
+                std::vector<T> tmp;
+                for (size_t i = 0; i < keys_count; ++i) {
+                    if (target_node.ptr->data[i] != value)
+                        tmp.push_back(target_node.ptr->data[i]);
+                }
+
+                // Reescribir los valores
+                target_node.ptr->data[0] = borrowed_value;
+                for (size_t i = 0; i < keys_count - 1; ++i) {
+                    target_node.ptr->data[i + 1] = tmp[i];
                 }
             }
+
+            // Vecino derecho caso 2b
+            Right:
+            if (index != keys_count) {
+                auto right = parent->children[index + 1];
+                // Si no puedo pedirle prestado, intento con la derecha
+                if (right->count <= (size_t) ORDER/2) { goto Merge; } // y pueda pedirle prestado
+
+                T borrowed_value = right->data[0];
+                --right->count;
+                // Mover todos los valores del nodo de la derecha 1 posicion a la izquierda
+                for (size_t i = 0; i < right->count; ++i) {
+                    right->data[i] = right->data[i + 1];
+                }
+                right->data[right->count] = 0; // valor nulo?
+
+                // Ponerlo en el padre
+                parent->data[index] = borrowed_value;
+
+                // Copiar los valores a un temp para reescribirlos
+                std::vector<T> tmp;
+                for (size_t i = 0; i < keys_count; ++i) {
+                    if (target_node.ptr->data[i] != value)
+                        tmp.push_back(target_node.ptr->data[i]);
+                }
+
+                // Reescribir los valores
+                target_node.ptr->data[keys_count - 1] = borrowed_value;
+                for (size_t i = 0; i < keys_count - 1; ++i) {
+                    target_node.ptr->data[i] = tmp[i];
+                }
+            }
+
+            // Merge caso 1c hacer merge con los vecinos
+            Merge:
+            std::cout << "MERGE" << std::endl;
+            index = index;
         }
 
     }
