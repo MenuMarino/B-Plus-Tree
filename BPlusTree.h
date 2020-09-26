@@ -176,7 +176,6 @@ public:
                 }
                 target_node.ptr->count -= 1;
             }
-
         } else { // keys == min degree
             // std::cout << "target node contains minimum number of keys\n";
             // int parent_key_count = target_node.parent->count;
@@ -210,6 +209,7 @@ public:
                 for (size_t i = 0; i < keys_count - 1; ++i) {
                     target_node.ptr->data[i + 1] = tmp[i];
                 }
+                goto End;
             }
 
             // Vecino derecho caso 2b
@@ -242,11 +242,14 @@ public:
                 for (size_t i = 0; i < keys_count - 1; ++i) {
                     target_node.ptr->data[i] = tmp[i];
                 }
+                goto End;
             }
 
             // Merge caso 1c hacer merge con los vecinos
             Merge:
             std::cout << "MERGE" << std::endl;
+
+            End:
             index = index;
         }
 
