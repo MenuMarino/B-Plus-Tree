@@ -131,25 +131,51 @@ private:
         void merge(size_t index){
             node *child = this->children[index];
             node *sibling = this->children[index+1];
+            if(sibling!= nullptr){
+                if(data[index] != sibling->data[0]){
+                    child->data[child->count-1] = data[index];
+                    for (int i=0; i<sibling->count; ++i)
+                        child->data[i+child->count] = sibling->data[i];
 
-            child->data[child->count-1] = data[index];
-            for (int i=0; i<sibling->count; ++i)
-                child->data[i+child->count] = sibling->data[i];
+                    if (!child->isLeaf) {
+                        for(int i=0; i<sibling->count+1; ++i)
+                            child->children[i+child->count] = sibling->children[i];
+                    }
 
-            if (!child->isLeaf) {
-                for(int i=0; i<sibling->count+1; ++i)
-                    child->children[i+child->count] = sibling->children[i];
+                    for (int i=index+1; i<count; ++i)
+                        data[i-1] = data[i];
+
+
+                    for (int i=index+2; i<=count; ++i)
+                        children[i-1] = children[i];
+
+                    child->count += sibling->count;
+                    count--;
+                }else{
+
+                    for (int i=0; i<sibling->count; ++i)
+                        child->data[i+child->count-1] = sibling->data[i];
+
+                    if (!child->isLeaf) {
+                        for(int i=0; i<sibling->count+1; ++i)
+                            child->children[i+child->count-1] = sibling->children[i];
+                    }
+
+                    for (int i=index+1; i<count; ++i)
+                        data[i-1] = data[i];
+
+
+                    for (int i=index+2; i<=count; ++i)
+                        children[i-1] = children[i];
+
+                    child->count += sibling->count-1;
+                    count--;
+                }
+            }else{
+                std::cout << "derecho";
             }
 
-            for (int i=index+1; i<count; ++i)
-                data[i-1] = data[i];
 
-
-            for (int i=index+2; i<=count; ++i)
-                children[i-1] = children[i];
-
-            child->count += sibling->count;
-            count--;
 
             delete(sibling);
         } 
@@ -181,19 +207,29 @@ public:
         auto parent = target_node.parent;
 
         if (keys_count > (size_t)ORDER/2) {
-            if (value == target_node.ptr->data[keys_count-1]) {
+            if (value == target_node.ptr->data[0]) {
                 int parent_key_count = target_node.parent->count;
                 for (int i = 0; i < parent_key_count; ++i) {
                     if (target_node.parent->data[i] == value) {
-                        target_node.parent->data[i] = target_node.ptr->data[keys_count-2];
+                        target_node.parent->data[i] = target_node.ptr->data[1];
+                        for (int j = 0; j < target_node.ptr->count-1; ++j) {
+                            target_node.ptr->data[j] = target_node.ptr->data[j+1];
+                        }
+                        target_node.ptr->count -= 1;
+                        return;
                     }
                 }
+                for (int j = 0; j < target_node.ptr->count-1; ++j) {
+                    target_node.ptr->data[j] = target_node.ptr->data[j+1];
+                }
                 target_node.ptr->count -= 1;
+                return;
             } else { // caso 1b
                 for (int i = index; i < keys_count-1; ++i) {
                     target_node.ptr->data[i] = target_node.ptr->data[i+1];
                 }
                 target_node.ptr->count -= 1;
+                return;
             }
         } else {
             // Vecino izquierdo caso 2a
@@ -254,6 +290,7 @@ public:
 
             // Merge caso 1c hacer merge con los vecinos
             std::cout << "Merge" << std::endl;
+            std::cout << parent->data[0]<<std::endl;
             parent->merge(index);
 
         }

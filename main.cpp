@@ -23,6 +23,9 @@ int main() {
     bt.remove(2);
     cout << "==============================" << endl;
     bt.print();
+    bt.remove(9);
+    cout << "==============================" << endl;
+    bt.print();
     
     // bt.in_order_print();
 
