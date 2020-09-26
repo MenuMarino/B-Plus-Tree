@@ -127,6 +127,32 @@ private:
             parent->children[position] = child1;
             parent->children[position + 1] = child2;
         }
+
+        void merge(size_t index){
+            node *child = this->children[index];
+            node *sibling = this->children[index+1];
+
+            child->data[child->count-1] = data[index];
+            for (int i=0; i<sibling->count; ++i)
+                child->data[i+child->count] = sibling->data[i];
+
+            if (!child->isLeaf) {
+                for(int i=0; i<sibling->count+1; ++i)
+                    child->children[i+child->count] = sibling->children[i];
+            }
+
+            for (int i=index+1; i<count; ++i)
+                data[i-1] = data[i];
+
+
+            for (int i=index+2; i<=count; ++i)
+                children[i-1] = children[i];
+
+            child->count += sibling->count;
+            count--;
+
+            delete(sibling);
+        } 
     };
 
 public:
@@ -146,22 +172,15 @@ public:
 
     void remove(const T& value) {
         iterator target_node = find(value);
+        if(target_node.ptr == nullptr) {
+            return; 
+        }
+
         size_t keys_count = target_node.ptr->count;
         int index = target_node.index;
         auto parent = target_node.parent;
 
-        if (keys_count > (size_t)ORDER/2) { // more keys than min degree, caso 1
-            // std::cout << "target node contains more keys than min degree\n";
-            // std::cout << "parent of target node:\n\t";
-            // for (int i = 0; i < keys_count; ++i) {
-            //     std::cout << target_node.parent->data[i] << " ";
-            // }
-            // std::cout << "\n";
-            // std::cout << "target node:\n\t";
-            // for (int i = 0; i < keys_count; ++i) {
-            //     std::cout << target_node.ptr->data[i] << " ";
-            // }
-            // std::cout << "\n";
+        if (keys_count > (size_t)ORDER/2) {
             if (value == target_node.ptr->data[keys_count-1]) {
                 int parent_key_count = target_node.parent->count;
                 for (int i = 0; i < parent_key_count; ++i) {
@@ -176,20 +195,11 @@ public:
                 }
                 target_node.ptr->count -= 1;
             }
-        } else { // keys == min degree
-            // std::cout << "target node contains minimum number of keys\n";
-            // int parent_key_count = target_node.parent->count;
-            // for (int i = 0; i < parent_key_count; ++i) {
-            //     if (target_node.parent->data[i] == value) {
-            //         // target_node.parent->children[i]
-            //     }
-            // }
+        } else {
             // Vecino izquierdo caso 2a
-            if (index != 0) { // En caso tenga un hijo izquierdo
+            if (index != 0 && parent->children[index - 1]->count > (size_t) ORDER/2) { // En caso tenga un hijo izquierdo
                 auto left = parent->children[index - 1];
-                // Si no puedo pedirle prestado, intento con la derecha
-                if (left->count <= (size_t) ORDER/2) { goto Right; } // y pueda pedirle prestado
-
+                std::cout << "Izq" << std::endl;
                 T borrowed_value = left->data[left->count];
                 left->data[left->count] = 0; // valor nulo?
                 --left->count;
@@ -209,16 +219,13 @@ public:
                 for (size_t i = 0; i < keys_count - 1; ++i) {
                     target_node.ptr->data[i + 1] = tmp[i];
                 }
-                goto End;
+                return;
             }
 
             // Vecino derecho caso 2b
-            Right:
-            if (index != keys_count) {
+            if (index != keys_count && parent->children[index + 1]->count > (size_t) ORDER/2) { 
                 auto right = parent->children[index + 1];
-                // Si no puedo pedirle prestado, intento con la derecha
-                if (right->count <= (size_t) ORDER/2) { goto Merge; } // y pueda pedirle prestado
-
+                std::cout << "Der" << ORDER/2 << std::endl;
                 T borrowed_value = right->data[0];
                 --right->count;
                 // Mover todos los valores del nodo de la derecha 1 posicion a la izquierda
@@ -242,15 +249,13 @@ public:
                 for (size_t i = 0; i < keys_count - 1; ++i) {
                     target_node.ptr->data[i] = tmp[i];
                 }
-                goto End;
+                return;
             }
 
             // Merge caso 1c hacer merge con los vecinos
-            Merge:
-            std::cout << "MERGE" << std::endl;
+            std::cout << "Merge" << std::endl;
+            parent->merge(index);
 
-            End:
-            index = index;
         }
 
     }
