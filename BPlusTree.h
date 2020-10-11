@@ -3,8 +3,13 @@
 
 #include <vector>
 #include <iostream>
+#include <fstream>
+#include "funciones.h"
 
 int ORDER;
+
+const std::string indexfile = "index.dat";
+const std::string datafile = "data.dat";
 
 template<typename T>
 // ahora es un B+
@@ -13,15 +18,38 @@ private:
 
     enum state_t { OVERFLOW, UNDERFLOW, B_OK };
 
+    struct Registro {
+
+    };
+
     struct node {
-        std::vector<T> data;
-        std::vector<node*> children;
+        T* data; // Indices
+        size_t* children; // Hijos (posicion en el archivo de los hijos)
+        Registro** registros;
         size_t count{0};
-        bool isLeaf{0};
+        bool isLeaf{false};
         node* next{0};
         node* prev{0};
         
-        node() : data(ORDER+1), children(ORDER+2, nullptr) { }
+        node() {
+            data = (T*) calloc (ORDER + 1, sizeof(T));
+            children = (size_t*) calloc (ORDER + 2, sizeof(size_t));
+        }
+
+        node* read_node(size_t index, const std::string& file) {
+            std::ifstream myFile;
+            myFile.open(file);
+            auto rNode = new node();
+            myFile.seekg(index * sizeof(node));
+
+
+            return rNode;
+        }
+
+        void write_node(const std::string& file) {
+            std::ifstream myFile;
+            myFile.open(file, ios::app);
+        }
 
         void insert_into(size_t index, const T& value) {
             size_t j = this->count;
