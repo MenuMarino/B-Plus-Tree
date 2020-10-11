@@ -39,6 +39,26 @@ int readInt(fstream& stream) {
     return result;
 }
 
+size_t readUnsignedLong(fstream& stream) {
+    size_t result;
+    stream.read( (char*) &result, sizeof(size_t) );
+    return result;
+}
+
+void writeUnsignedLong(fstream& stream, size_t val) {
+    stream.write( reinterpret_cast<char*>(&val), sizeof(size_t) );
+}
+
+uint8_t readByte(fstream& stream) {
+    uint8_t result;
+    stream.read( (char*) &result, sizeof(uint8_t) );
+    return result;
+}
+
+void writeByte(fstream& stream, uint8_t val) {
+    stream.write( reinterpret_cast<char*>(&val), sizeof(uint8_t) );
+}
+
 void writeShort(fstream& stream, short ival) {
     stream.write(reinterpret_cast<char*>(&ival), sizeof(short));
 }
@@ -78,6 +98,14 @@ Registro** readRegisterArray(fstream& stream, int len) {
 
 void writeRegisterArray(fstream& stream, Registro** array, int len) {
     stream.write( (char*) array, sizeof(Registro*) * len );
+}
+
+void setReadPos(fstream& file, int newPos) {
+    file.seekg(newPos, ios::beg);
+}
+
+void setWritePos(fstream& file, int newPos) {
+    file.seekp(newPos, ios::beg);
 }
 
 #endif //PROYECTO_1_FUNCIONES_H

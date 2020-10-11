@@ -26,20 +26,6 @@ struct Registro {
         strncpy(this->country, country.c_str(), 35);
     }
 
-    void write(fstream& file) {
-        writeInt(file, this->id);
-        writeCharArray(file, this->name, 20);
-        writeShort(file, this->pin);
-        writeCharArray(file, this->country, 35);
-    }
-
-    void read(fstream& file) {
-        this->id = readInt(file);
-        strncpy(this->name, readCharArray(file, 20), 20);
-        this->pin = readShort(file);
-        strncpy(this->country, readCharArray(file, 35), 35);
-    }
-
     void print() {
         cout << id << " ";
         cout << name << " ";
@@ -60,14 +46,14 @@ private:
         size_t* children; // Hijos (posicion en el archivo de los hijos)
         Registro** registros; // solo los nodos hoja tienen esto
         size_t count{0}; // numero de keys que el nodo tiene
-        bool isLeaf{false}; // el nodo es hoja?
+        uint8_t isLeaf{0}; // el nodo es hoja?
         int next; // si el nodo es hoja, un puntero (posicion en el archivo de mi hermano derecho)
         int prev; // si el nodo es hoja, un puntero (posicion en el archivo de mi hermano izquierdo)
         
         node() {
             data = (T*) calloc (ORDER + 1, sizeof(T));
             children = (size_t*) calloc (ORDER + 2, sizeof(size_t));
-            registros = (Registro*) calloc (ORDER + 2, sizeof(Registro)-3);
+            registros = new Registro*[ORDER+2](); // el '()' hace lo mismo que calloc
         }
 
         node* read_node(size_t index, const std::string& file) {

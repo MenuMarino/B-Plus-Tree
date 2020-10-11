@@ -94,29 +94,32 @@ int main() {
         // }
         // cout << "\n";
 
-        Registro* r1 = new Registro(69, "Benjamin", 1234, "Pisco");
-        Registro* r2 = new Registro(70, "Yanli", 5432, "Ica");
-        Registro* r3 = new Registro(71, "Yeny", 6789, "Arequipa");
-        Registro* r4 = new Registro(72, "Victor", 9876, "Huacho");
-        Registro* r5 = new Registro(73, "Jose Maria", 1111, "Lambayeque");
+        // Registro* r1 = new Registro(69, "Benjamin", 1234, "Pisco");
+        // Registro* r2 = new Registro(70, "Yanli", 5432, "Ica");
+        // Registro* r3 = new Registro(71, "Yeny", 6789, "Arequipa");
+        // Registro* r4 = new Registro(72, "Victor", 9876, "Huacho");
+        // Registro* r5 = new Registro(73, "Jose Maria", 1111, "Lambayeque");
 
-        Registro** registers = new Registro*[5];
-        registers[0] = r1;
-        registers[1] = r2;
-        registers[2] = r3;
-        registers[3] = r4;
-        registers[4] = r5;
+        // Registro** registers = new Registro*[5];
+        // registers[0] = r1;
+        // registers[1] = r2;
+        // registers[2] = r3;
+        // registers[3] = r4;
+        // registers[4] = r5;
 
-        writeRegisterArray(file, registers, 5);
+        // writeRegisterArray(file, registers, 5);
 
-        Registro** registros;
+        // Registro** registros;
 
-        file.seekg(0, ios::beg);
-        registros = readRegisterArray(file, 5);
+        // file.seekg(0, ios::beg);
+        // registros = readRegisterArray(file, 5);
 
-        for (int i = 0; i < 5; ++i) {
-            registros[i]->print();
-        }
+        // for (int i = 0; i < 5; ++i) {
+        //     registros[i]->print();
+        // }
+
+        cout << "sizeof(size_t): " << sizeof(size_t) << "\n";
+        cout << "sizeof(uint8_t): " << sizeof(uint8_t) << "\n";
 
     }
 
