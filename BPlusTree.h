@@ -11,6 +11,43 @@ int ORDER;
 const std::string indexfile = "index.dat";
 const std::string datafile = "data.dat";
 
+struct Registro {
+    unsigned id;
+    char name[20];
+    short pin;
+    char country[35];
+
+    Registro() = default;
+
+    Registro(unsigned id, string name, short pin, string country) {
+        this->id = id;
+        strncpy(this->name, name.c_str(), 20);
+        this->pin = pin;
+        strncpy(this->country, country.c_str(), 35);
+    }
+
+    void write(fstream& file) {
+        writeInt(file, this->id);
+        writeCharArray(file, this->name, 20);
+        writeShort(file, this->pin);
+        writeCharArray(file, this->country, 35);
+    }
+
+    void read(fstream& file) {
+        this->id = readInt(file);
+        strncpy(this->name, readCharArray(file, 20), 20);
+        this->pin = readShort(file);
+        strncpy(this->country, readCharArray(file, 35), 35);
+    }
+
+    void print() {
+        cout << id << " ";
+        cout << name << " ";
+        cout << pin << " ";
+        cout << country << "\n";
+    }
+};
+
 template<typename T>
 // ahora es un B+
 class btree {
@@ -18,22 +55,19 @@ private:
 
     enum state_t { OVERFLOW, UNDERFLOW, B_OK };
 
-    struct Registro {
-
-    };
-
     struct node {
-        T* data; // Indices
+        T* data; // keys
         size_t* children; // Hijos (posicion en el archivo de los hijos)
-        Registro** registros;
-        size_t count{0};
-        bool isLeaf{false};
-        node* next{0};
-        node* prev{0};
+        Registro** registros; // solo los nodos hoja tienen esto
+        size_t count{0}; // numero de keys que el nodo tiene
+        bool isLeaf{false}; // el nodo es hoja?
+        int next; // si el nodo es hoja, un puntero (posicion en el archivo de mi hermano derecho)
+        int prev; // si el nodo es hoja, un puntero (posicion en el archivo de mi hermano izquierdo)
         
         node() {
             data = (T*) calloc (ORDER + 1, sizeof(T));
             children = (size_t*) calloc (ORDER + 2, sizeof(size_t));
+            registros = (Registro*) calloc (ORDER + 2, sizeof(Registro)-3);
         }
 
         node* read_node(size_t index, const std::string& file) {
@@ -42,6 +76,7 @@ private:
             auto rNode = new node();
             myFile.seekg(index * sizeof(node));
 
+            
 
             return rNode;
         }

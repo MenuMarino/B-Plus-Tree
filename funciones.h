@@ -4,6 +4,8 @@
 #include <fstream>
 using namespace std;
 
+struct Registro;
+
 int getFileSize(const std::string& fileName) {
     ifstream file(fileName.c_str(), ifstream::in | ifstream::binary);
 
@@ -57,6 +59,25 @@ T* readTArray (fstream& stream, int len) {
     T* buffer = new T[len];
     stream.read( (char*) buffer, len * sizeof(T));
     return buffer;
+}
+
+// vector<Registro*> registros; 
+// // new Register
+
+// for (auto r : registros) {
+//     bt->insert(r);
+// }
+
+Registro** readRegisterArray(fstream& stream, int len) {
+    Registro** registers = new Registro* [len];
+
+    stream.read( (char*) registers, sizeof(Registro*) * len );
+
+    return registers;
+}
+
+void writeRegisterArray(fstream& stream, Registro** array, int len) {
+    stream.write( (char*) array, sizeof(Registro*) * len );
 }
 
 #endif //PROYECTO_1_FUNCIONES_H

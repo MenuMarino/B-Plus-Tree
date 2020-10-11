@@ -6,26 +6,26 @@ using namespace std;
 
 int main() {
 
-    typedef btree<int>::iterator btree_iterator;
-    ORDER = 3;
-    btree<int> bt;
-    for (size_t i = 1; i <= 10; i++) {
-        bt.insert(i);
-    }
+    // typedef btree<int>::iterator btree_iterator;
+    // ORDER = 3;
+    // btree<int> bt;
+    // for (size_t i = 1; i <= 10; i++) {
+    //     bt.insert(i);
+    // }
 
-    bt.print();
-    bt.remove(1);
-    cout << "==============================" << endl;
-    bt.print();
-    bt.remove(4);
-    cout << "==============================" << endl;
-    bt.print();
-    bt.remove(2);
-    cout << "==============================" << endl;
-    bt.print();
-    bt.remove(9);
-    cout << "==============================" << endl;
-    bt.print();
+    // bt.print();
+    // bt.remove(1);
+    // cout << "==============================" << endl;
+    // bt.print();
+    // bt.remove(4);
+    // cout << "==============================" << endl;
+    // bt.print();
+    // bt.remove(2);
+    // cout << "==============================" << endl;
+    // bt.print();
+    // bt.remove(9);
+    // cout << "==============================" << endl;
+    // bt.print();
     
     // bt.in_order_print();
 
@@ -72,6 +72,55 @@ int main() {
     // }
 
     // bt.in_order_print();
+
+    fstream file("nodos.dat", fstream::binary | fstream::out | fstream::in | fstream::trunc);
+
+    if (file.is_open()) {
+
+        // int* arr = new int[5];
+        // arr[0] = 5;
+        // arr[1] = 4;
+        // arr[2] = 3;
+        // arr[3] = 2;
+        // arr[4] = 1;
+
+        // writeTArray<int>(file, arr, 5);
+        // file.seekg(0, ios::beg);
+
+        // int* arrLeido = readTArray<int>(file, 5);
+
+        // for (int i = 0; i < 5; ++i) {
+        //     cout << arrLeido[i] << " ";
+        // }
+        // cout << "\n";
+
+        Registro* r1 = new Registro(69, "Benjamin", 1234, "Pisco");
+        Registro* r2 = new Registro(70, "Yanli", 5432, "Ica");
+        Registro* r3 = new Registro(71, "Yeny", 6789, "Arequipa");
+        Registro* r4 = new Registro(72, "Victor", 9876, "Huacho");
+        Registro* r5 = new Registro(73, "Jose Maria", 1111, "Lambayeque");
+
+        Registro** registers = new Registro*[5];
+        registers[0] = r1;
+        registers[1] = r2;
+        registers[2] = r3;
+        registers[3] = r4;
+        registers[4] = r5;
+
+        writeRegisterArray(file, registers, 5);
+
+        Registro** registros;
+
+        file.seekg(0, ios::beg);
+        registros = readRegisterArray(file, 5);
+
+        for (int i = 0; i < 5; ++i) {
+            registros[i]->print();
+        }
+
+    }
+
+    file.close();
 
     return 0;
 }
