@@ -21,10 +21,7 @@ private:
         node* next{0};
         node* prev{0};
         
-        node() : data(ORDER+1), children(ORDER+2, nullptr)
-        {
-
-        }
+        node() : data(ORDER+1), children(ORDER+2, nullptr) { }
 
         void insert_into(size_t index, const T& value) {
             size_t j = this->count;
@@ -59,10 +56,6 @@ private:
                 }
             }
             return this->count > ORDER ? OVERFLOW : B_OK;
-        }
-
-        void remove(const T& value) {
-            
         }
 
         void split(size_t position) {
@@ -171,11 +164,9 @@ private:
                     child->count += sibling->count-1;
                     count--;
                 }
-            }else{
-                std::cout << "derecho";
+            } else {
+                std::cout << "derecho"; //TODO: Que falta?
             }
-
-
 
             delete(sibling);
         } 
@@ -288,7 +279,7 @@ public:
                 return;
             }
 
-            // Merge caso 1c hacer merge con los vecinos
+            // TODO: Merge caso 1c hacer merge con los vecinos
             std::cout << "Merge" << std::endl;
             std::cout << parent->data[0]<<std::endl;
             parent->merge(index);
@@ -298,7 +289,6 @@ public:
     }
 
     void print_leaves() {
-
         node* aux = &root;
         while (aux->children[0] != nullptr) {
             aux = aux->children[0];
@@ -333,7 +323,7 @@ public:
                     std::cout << "    ";
                 }
                 if (ptr->isLeaf) {
-                    std::cout << ptr->data[i] << /*"*" <<*/ "\n";
+                    std::cout << ptr->data[i] << "*" << "\n";
                 } else {
                     std::cout << ptr->data[i] << "\n";
                 }
