@@ -67,10 +67,6 @@ Se crea un nuevo bucket, se crea la entrada en el hash, se inserta el registro e
 
 ![Caso B](caseB.png)
 
-### B+ Tree
-
-### Static Hashing
-
 ## Resultados Experimentales
 
 - Cuadro y/o gráfico comparativo de desempeño de las técnicas de indexación de archivos sobre el dominio de datos. Tanto para inserción como para búsqueda.
