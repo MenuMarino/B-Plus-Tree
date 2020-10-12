@@ -29,6 +29,7 @@ struct Registro {
     }
 
     void print() {
+        if (!this) return;
         cout << id << " ";
         cout << name << " ";
         cout << pin << " ";
@@ -120,7 +121,7 @@ private:
             } else {
                 fstream myFile;
                 myFile.open(indexfile, ios::binary | ios::in | ios::out);
-                setReadPos(myFile, index);
+                setReadPos(myFile, this->children[index]);
                 auto child = readNode(myFile);
                 myFile.close();
 
@@ -145,7 +146,7 @@ private:
             node* parent = this;
             fstream myFile;
             myFile.open(indexfile, ios::binary | ios::in | ios::out);
-            setReadPos(myFile, position);
+            setReadPos(myFile, this->children[position]);
             node* ptr = readNode(myFile);
             node* ptr_next = nullptr;
             node* ptr_prev = nullptr;
@@ -165,7 +166,6 @@ private:
             node* child1 = new node();
             node* child2 = new node();
             child1->filePosition = FILESIZE;
-            child1->filePosition = FILESIZE + sizeof(node); // TODO: funciona?
 
             if (ptr->isLeaf != 0) {
                 child1->isLeaf = 1;
@@ -202,27 +202,34 @@ private:
 
             // update dll pointers
             child1->next = child2->filePosition;
-            child1->prev = ptr_prev->filePosition;
-            child2->next = ptr_next->filePosition;
             child2->prev = child1->filePosition;
 
             if (ptr_next) {
                 ptr_next->prev = child2->filePosition;
+                child2->next = ptr_next->filePosition;
             }
             if (ptr_prev) {
+                child1->prev = ptr_prev->filePosition;
                 ptr_prev->next = child1->filePosition;
             }
-            
+
+            myFile.open(indexfile, ios::app | ios::binary | ios::out);
+            writeNode(myFile, child1);
+            myFile.close();
+
+            myFile.open(indexfile, ios::app | ios::binary | ios::out);
+            child2->filePosition = FILESIZE; // FIXME: Facil tiene lag el write
+            writeNode(myFile, child2);
+            myFile.close();
+
             parent->insert_into(position, ptr->registros[mid]);
             parent->children[position] = child1->filePosition;
             parent->children[position + 1] = child2->filePosition;
 
             myFile.open(indexfile, ios::app | ios::binary | ios::out);
-            writeNode(myFile, child1);
-            child2->filePosition = FILESIZE; // FIXME: Facil tiene lag el write
-            writeNode(myFile, child2);
             setWritePos(myFile, parent->filePosition);
             writeNode(myFile, parent);
+            myFile.close();
         }
 
         void merge(size_t index){
@@ -347,7 +354,18 @@ public:
 
         root.isLeaf = 1;
     }
-    
+
+    void random() {
+        fstream myFile(indexfile, ios::binary | ios::in);
+        setReadPos(myFile, root.children[0]);
+        auto child1 = readNode(myFile);
+        setReadPos(myFile, root.children[1]);
+        auto child2 = readNode(myFile);
+        child1->print();
+        child2->print();
+        myFile.close();
+    }
+
     void insert(Registro* registro) {
         auto state = root.insert(registro);
         if (state == state_t::OVERFLOW) {
@@ -490,9 +508,9 @@ private:
     void print(node *ptr, int level) {
         if (ptr) {
             node* child = nullptr;
+            fstream myFile;
             int i;
             for (i = ptr->count - 1; i >= 0; i--) {
-                fstream myFile;
                 myFile.open(indexfile, ios::binary | ios::in | ios::out);
                 setReadPos(myFile, ptr->children[i + 1]);
                 child = readNode(myFile);
@@ -510,6 +528,10 @@ private:
                     std::cout << ptr->data[i] << "\n";
                 }
             }
+            myFile.open(indexfile, ios::binary | ios::in | ios::out);
+            setReadPos(myFile, ptr->children[i + 1]);
+            child = readNode(myFile);
+            myFile.close();
             if (!ptr->isLeaf)
                 print(child, level + 1);
         }
@@ -555,6 +577,7 @@ private:
         // B+
         if (_root->isLeaf != 0) {
             child2->data[j] = _root->data[mid];
+            child2->registros[j] = _root->registros[mid];
             child2->count++;
             ++j;
         }
@@ -583,6 +606,9 @@ private:
         fstream myFile;
         myFile.open(indexfile, ios::app | ios::binary | ios::out);
         writeNode(myFile, child1);
+        myFile.close();
+
+        myFile.open(indexfile, ios::app | ios::binary | ios::out);
         child2->filePosition = FILESIZE; // FIXME: Facil tiene lag el write
         writeNode(myFile, child2);
         myFile.close();
