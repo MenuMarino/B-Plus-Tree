@@ -6,7 +6,7 @@
 #include <fstream>
 #include "funciones.h"
 
-int ORDER;
+int ORDER = 3;
 
 const std::string indexfile = "index.dat";
 const std::string datafile = "data.dat";
@@ -46,7 +46,7 @@ private:
         size_t* children; // Hijos (posicion en el archivo de los hijos)
         Registro** registros; // solo los nodos hoja tienen esto
         size_t count{0}; // numero de keys que el nodo tiene
-        uint8_t isLeaf{0}; // el nodo es hoja?
+        int isLeaf; // el nodo es hoja?
         int next; // si el nodo es hoja, un puntero (posicion en el archivo de mi hermano derecho)
         int prev; // si el nodo es hoja, un puntero (posicion en el archivo de mi hermano izquierdo)
         
@@ -56,21 +56,43 @@ private:
             registros = new Registro*[ORDER+2](); // el '()' hace lo mismo que calloc
         }
 
-        node* read_node(size_t index, const std::string& file) {
-            std::ifstream myFile;
-            myFile.open(file);
-            auto rNode = new node();
-            myFile.seekg(index * sizeof(node));
+        void print() {
+            cout << "Data: ";
+            for (int i = 0; i < this->count+1; ++i) {
+                cout << this->data[i] << " ";
+            }
+            cout << "\n";
+            cout << "Children: ";
+            for (int i = 0; i < this->count+2; ++i) {
+                cout << this->children[i] << " ";
+            }
+            cout << "\n";
+            cout << "Registros: \n";
+            for (int i = 0; i < this->count+2; ++i) {
+                this->registros[i]->print();
+            }
+            cout << "\n";
+            cout << "Count: " << this->count << "\n";
+            cout << "IsLeaf: " << this->isLeaf << "\n";
+            cout << "Next: " << this->next << "\n";
+            cout << "Prev: " << this->prev << "\n";
+        }
+
+        // node* read_node(size_t index, const std::string& file) {
+        //     std::ifstream myFile;
+        //     myFile.open(file);
+        //     auto rNode = new node();
+        //     myFile.seekg(index * sizeof(node));
 
             
 
-            return rNode;
-        }
+        //     return rNode;
+        // }
 
-        void write_node(const std::string& file) {
-            std::ifstream myFile;
-            myFile.open(file, ios::app);
-        }
+        // void write_node(const std::string& file) {
+        //     std::ifstream myFile;
+        //     myFile.open(file, ios::app);
+        // }
 
         void insert_into(size_t index, const T& value) {
             size_t j = this->count;
@@ -221,9 +243,85 @@ private:
         } 
     };
 
+    // TODO: función readNode y writeNode
+
+    /*
+        T* data; // keys
+        size_t* children; // Hijos (posicion en el archivo de los hijos)
+        Registro** registros; // solo los nodos hoja tienen esto
+        size_t count{0}; // numero de keys que el nodo tiene
+        uint8_t isLeaf{0}; // el nodo es hoja?
+        int next; // si el nodo es hoja, un puntero (posicion en el archivo de mi hermano derecho)
+        int prev; // si el nodo es hoja, un puntero (posicion en el archivo de mi hermano izquierdo)
+    */
+
+    void writeNode(fstream& stream, node* nodo) {
+        writeTArray<T>(stream, nodo->data, ORDER+1);
+        writeTArray<size_t>(stream, nodo->children, ORDER+2);
+        writeRegisterArray(stream, nodo->registros, ORDER+2);
+        writeUnsignedLong(stream, nodo->count);
+        writeInt(stream, nodo->isLeaf);
+        writeInt(stream, nodo->next);
+        writeInt(stream, nodo->prev);
+    }
+
+    node* readNode(fstream& stream) {
+        node* nodo = new node();
+        nodo->data = readTArray<T>(stream, ORDER+1);
+        nodo->children = readTArray<size_t>(stream, ORDER+2);
+        nodo->registros = readRegisterArray(stream, ORDER+2);
+        nodo->count = readUnsignedLong(stream);
+        nodo->isLeaf = readInt(stream);
+        nodo->next = readInt(stream);
+        nodo->prev = readInt(stream);
+        return nodo;
+    }
+
 public:
 
     btree() {
+        fstream file("nodos.dat", fstream::in | fstream::out | fstream::binary | fstream::trunc);
+
+        if (file.is_open()) {
+            // order+1
+            // order+2
+            // order+2
+            node* nodo = new node();
+            // order=3
+            nodo->children[0] = 1;
+            nodo->children[1] = 2;
+            nodo->children[2] = 3;
+            nodo->children[3] = 4;
+            nodo->children[4] = 5;
+
+            Registro* r1 = new Registro(69, "Benjamin", 1234, "Pisco");
+            Registro* r2 = new Registro(70, "Yanli", 5432, "Ica");
+            Registro* r3 = new Registro(71, "Yeny", 6789, "Arequipa");
+            Registro* r4 = new Registro(72, "Victor", 9876, "Huacho");
+            Registro* r5 = new Registro(73, "Jose Maria", 1111, "Lambayeque");
+
+            Registro** registers = new Registro*[5];
+            registers[0] = r1;
+            registers[1] = r2;
+            registers[2] = r3;
+            registers[3] = r4;
+            registers[4] = r5;
+
+            nodo->registros = registers;
+            nodo->count = ORDER;
+            nodo->isLeaf = 1;
+            nodo->next = 12;
+            nodo->prev = 24;
+
+            writeNode(file, nodo);
+
+            setReadPos(file, 0);
+            node* _nodo = readNode(file);
+            _nodo->print();
+
+        }
+        file.close();
+
         root.isLeaf = true;
         head = &root;
     }

@@ -13,6 +13,8 @@ int main() {
     //     bt.insert(i);
     // }
 
+
+
     // bt.print();
     // bt.remove(1);
     // cout << "==============================" << endl;
@@ -118,12 +120,16 @@ int main() {
         //     registros[i]->print();
         // }
 
-        cout << "sizeof(size_t): " << sizeof(size_t) << "\n";
-        cout << "sizeof(uint8_t): " << sizeof(uint8_t) << "\n";
+        
+
+        // cout << "sizeof(size_t): " << sizeof(size_t) << "\n";
+        // cout << "sizeof(uint8_t): " << sizeof(uint8_t) << "\n";
 
     }
 
     file.close();
+
+    btree<int> bt;
 
     return 0;
 }
