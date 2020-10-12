@@ -531,7 +531,7 @@ private:
         node* child1 = new node();
         child1->filePosition = FILESIZE;
         node* child2 = new node();
-        child1->filePosition = FILESIZE + sizeof(node);
+        child2->filePosition = FILESIZE + sizeof(node);
 
         if (_root->isLeaf != 0) {
             child1->isLeaf = 1;
@@ -580,17 +580,17 @@ private:
             head = child1->filePosition;
         }
 
-        _root->data[0] = _root->data[mid];
-        _root->children[0] = child1->filePosition;
-        _root->children[1] = child2->filePosition;
-        _root->count = 1;
-
         fstream myFile;
         myFile.open(indexfile, ios::app | ios::binary | ios::out);
         writeNode(myFile, child1);
         child2->filePosition = FILESIZE; // FIXME: Facil tiene lag el write
         writeNode(myFile, child2);
         myFile.close();
+
+        _root->data[0] = _root->data[mid];
+        _root->children[0] = child1->filePosition;
+        _root->children[1] = child2->filePosition;
+        _root->count = 1;
     }
 
 public:
