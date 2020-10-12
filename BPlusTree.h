@@ -127,11 +127,15 @@ private:
 
                 auto state = child->insert(registro);
                 if (state == state_t::OVERFLOW) {
-                    // split 
+                    // split
+                    myFile.open(indexfile, ios::binary | ios::in | ios::out);
+                    setWritePos(myFile, child->filePosition);
+                    writeNode(myFile, child);
+                    myFile.close();
                     this->split(index);
                 } else {
                     myFile.open(indexfile, ios::binary | ios::in | ios::out);
-                    setWritePos(myFile, index);
+                    setWritePos(myFile, this->children[index]);
                     writeNode(myFile, child);
                     myFile.close();
                 }
@@ -166,6 +170,7 @@ private:
             node* child1 = new node();
             node* child2 = new node();
             child1->filePosition = FILESIZE;
+            child2->filePosition = FILESIZE + sizeof(node);
 
             if (ptr->isLeaf != 0) {
                 child1->isLeaf = 1;
@@ -180,6 +185,7 @@ private:
                 child1->count++;
             }
             child1->children[i] = ptr->children[i];
+            child1->registros[i] = ptr->registros[i];
 
             size_t mid = i;
             i += 1; 
@@ -187,18 +193,20 @@ private:
             // B+
             if (ptr->isLeaf != 0) {
                 child2->data[j] = ptr->data[mid];
+                child2->registros[j] = ptr->registros[mid];
                 child2->count++;
                 ++j;
             }
             // B+
             for (; i < ptr->count; i++) {
                 child2->children[j] = ptr->children[i];
-                child1->registros[i] = ptr->registros[i];
+                child2->registros[j] = ptr->registros[i];
                 child2->data[j] = ptr->data[i];
                 child2->count++;
                 j++;
             }
             child2->children[j] = ptr->children[i];
+            child2->registros[j] = ptr->registros[i];
 
             // update dll pointers
             child1->next = child2->filePosition;
@@ -477,22 +485,27 @@ public:
 
     void print_leaves() {
         node* aux = &root;
+        fstream myFile(indexfile, ios::binary | ios::in);
         while (aux->children[0] != -1) {
-            aux = aux->children[0];
+            setReadPos(myFile, aux->children[0]);
+            aux = readNode(myFile);
         }
         head = aux->filePosition;
-        node* leave = head;
+        setReadPos(myFile, head);
+        node* leave = readNode(myFile);
 
         while (leave) {
             for (size_t i = 0; i < leave->count; ++i) {
                 std::cout << leave->data[i] << " ";
             }
-            if (leave->next) {
+            if (leave->next != -1) {
                 std::cout << " <-> ";
             }
-            leave = leave->next;
+            setReadPos(myFile, leave->next);
+            leave = readNode(myFile);
         }
         std::cout << "\n";
+        myFile.close();
     }
 
     void print() {

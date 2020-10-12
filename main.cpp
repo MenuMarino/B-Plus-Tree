@@ -21,6 +21,8 @@ int main() {
     auto r13 = new Registro(81, "Yeny", 6789, "Arequipa");
     auto r14 = new Registro(82, "Victor", 9876, "Huacho");
     auto r15 = new Registro(83, "Jose Maria", 1111, "Lambayeque");
+    auto r16 = new Registro(84, "Jose Maria", 1111, "Lambayeque");
+
     bt.insert(r1);
     bt.insert(r2);
     bt.insert(r3);
@@ -33,10 +35,15 @@ int main() {
     bt.insert(r10);
     bt.insert(r11);
     bt.insert(r12);
-//    bt.insert(r13);
-//    bt.insert(r14);
-//    bt.insert(r15);
+    bt.insert(r13);
+    bt.insert(r14);
+    bt.insert(r15);
+    for (int i = 0; i < 15; ++i) {
+        r16->id++;
+        bt.insert(r16);
+    }
     bt.print();
+    bt.print_leaves();
     return 0;
 }
 
