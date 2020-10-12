@@ -8,7 +8,7 @@ using namespace std;
 
 
 int main() {
-
+    int c=0;
     fstream rawDataFile, dataFile;
     vector<Registro> aux;
     rawDataFile.open("datosReales.txt", ios::in  | ios::binary);
@@ -22,17 +22,21 @@ int main() {
     }
 
 
-    StaticHash<Registro> a(50);
+    StaticHash a(50);
     //a.buildHash();
   // cout << sizeof(Registro);
     a.loadHash();
-    a.showData();
+   // a.showData();
+   // cout << cont;
 //
 //    cout << a.hashMap.size();
 //
-//    for(auto it: aux){
-//        a.search(it.id);
-//    }
+    for(auto it: aux){
+        c++;
+        a.search(it.id);
+    }
+
+    cout <<c;
 
 
 

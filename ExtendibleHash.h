@@ -7,10 +7,10 @@
 #include <istream>
 #include <cstring>
 #include <cstdio>
-#define BF 2
+#define BF 7
 
 using namespace std;
-
+int cont =0;
 
 
 struct Registro{
@@ -18,7 +18,6 @@ struct Registro{
     char name[30];
     int pin;
     char country[30];
-
 
     Registro() = default;
 
@@ -81,26 +80,18 @@ public:
 
 };
 
-template <class T>
-int hashing(T rec, short gp){
-    short mask = 0;
-    mask = (mask|((int)(pow(2,gp)) - 1));
-    return (rec & mask);
-}
 
 
 
 
 
-template <class T>
 class StaticHash {
+
     string indexFileName = "index.txt";
     string dataFileName = "data.txt";
     string rawDataFileName = "datosReales.txt";
     int capacity;
     int blockingFactor;
-
-
 
 
 public:
@@ -151,14 +142,14 @@ public:
             aux.push_back(bb);
             //bb.print();
         }
-        int cont =0;
+
         for(auto it:aux){
             for(int i=0; i<it.size; ++i){
                 cont++;
                 it.records[i].print();
             }
         }
-        cout << cont;
+
     }
 
     void search(int id){
@@ -236,7 +227,6 @@ public:
                 dataFile.open(dataFileName, ios::in | ios::out | ios::binary);
                 dataFile.seekp(0, ios::end);
                 dataFile.write((char*)& newBucket, sizeof(newBucket));
-
                 dataFile.close();
             }else{
 
@@ -253,9 +243,12 @@ public:
 
                     //CASO 2 no hay overflow, se lee el bucket, se agrega el registro y se mete de nuevo en el file
                     auxBucket.add(aux[i]);
+                    //auxBucket.records[1].print();
                     dataFile.seekp(datafilepos * sizeof(Bucket), ios::beg);
                     dataFile.write((char*)& auxBucket, sizeof(auxBucket));
+                    dataFile.close();
                     //cout << "a" << endl;
+                    //cont++;
 
                 }else{
                     //CASO 3 hay overflow, abro el bucket correspondiente, pongo en el campo overflow la posicion de insercion del nuevo bucket de overflow
@@ -277,26 +270,23 @@ public:
                         continue;
                     }
                     else if(auxBucket.overflow != -1 && auxBucket.size == BF){
+                        //cont ++;
                         dataFile.seekg(auxBucket.overflow * sizeof(Bucket), ios::beg);
                         dataFile.read((char*)& auxBucket, sizeof(auxBucket));
 
                         goto here1;
                     }
 
-
+                    //cont++;
                     dataFile.seekp(pos1, ios::beg);
                     auxBucket.add(aux[i]);
                     dataFile.write((char*)& auxBucket, sizeof(auxBucket));
                     
                     dataFile.close();
-
                 }
-
             }
 
-
         }
-
 
         
         saveHash();
