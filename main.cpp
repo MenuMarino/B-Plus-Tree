@@ -14,7 +14,7 @@ int main() {
     bt.insert(r1);
     bt.insert(r2);
     bt.insert(r3);
-//    bt.insert(r4);
+    bt.insert(r4);
 //    bt.insert(r5);
     bt.print();
     return 0;

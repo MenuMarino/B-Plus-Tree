@@ -10,7 +10,7 @@
 
 int ORDER = 3;
 
-const std::string indexfile = "index.dat";
+const std::string indexfile = "../index.dat";
 #define FILESIZE getFileSize(indexfile)
 
 struct Registro {
@@ -584,6 +584,13 @@ private:
         _root->children[0] = child1->filePosition;
         _root->children[1] = child2->filePosition;
         _root->count = 1;
+
+        fstream myFile;
+        myFile.open(indexfile, ios::app | ios::binary | ios::out);
+        writeNode(myFile, child1);
+        child2->filePosition = FILESIZE; // FIXME: Facil tiene lag el write
+        writeNode(myFile, child2);
+        myFile.close();
     }
 
 public:
