@@ -6,13 +6,13 @@ using namespace std;
 
 struct Registro;
 
-int getFileSize(const std::string& fileName) {
+long long getFileSize(const std::string& fileName) {
     ifstream file(fileName.c_str(), ifstream::in | ifstream::binary);
 
     if(!file.is_open()) return -1;
 
     file.seekg(0, ios::end);
-    int fileSize = file.tellg();
+    long long fileSize = file.tellg();
     file.close();
 
     return fileSize;
@@ -36,6 +36,16 @@ void writeInt(fstream& stream, int ival) {
 int readInt(fstream& stream) {
     int result;
     stream.read((char*) &result, sizeof(int));
+    return result;
+}
+
+void writeLongLong(fstream& stream, long long ival) {
+    stream.write(reinterpret_cast<char*>(&ival), sizeof(long long));
+}
+
+long long readLongLong(fstream& stream) {
+    long long result;
+    stream.read((char*) &result, sizeof(long long));
     return result;
 }
 

@@ -50,9 +50,9 @@ private:
         Registro** registros; // solo los nodos hoja tienen esto
         size_t count{0}; // numero de keys que el nodo tiene
         int isLeaf; // el nodo es hoja?
-        int next{-1}; // si el nodo es hoja, un puntero (posicion en el archivo de mi hermano derecho)
-        int prev{-1}; // si el nodo es hoja, un puntero (posicion en el archivo de mi hermano izquierdo)
-        size_t filePosition = -1; // posicion en el file
+        long long next{-1}; // si el nodo es hoja, un puntero (posicion en el archivo de mi hermano derecho)
+        long long prev{-1}; // si el nodo es hoja, un puntero (posicion en el archivo de mi hermano izquierdo)
+        long long filePosition = -1; // posicion en el file
         
         node() {
             data = (T*) calloc (ORDER + 1, sizeof(T));
@@ -212,13 +212,13 @@ private:
             child1->next = child2->filePosition;
             child2->prev = child1->filePosition;
 
-            if (ptr_next) {
-                ptr_next->prev = child2->filePosition;
-                child2->next = ptr_next->filePosition;
-            }
             if (ptr_prev) {
                 child1->prev = ptr_prev->filePosition;
                 ptr_prev->next = child1->filePosition;
+                myFile.open(indexfile, ios::binary | ios::out);
+                setWritePos(myFile, ptr_prev->filePosition);
+                writeNode(myFile, ptr_prev);
+                myFile.close();
             }
 
             myFile.open(indexfile, ios::app | ios::binary | ios::out);
@@ -229,6 +229,14 @@ private:
             child2->filePosition = FILESIZE; // FIXME: Facil tiene lag el write
             writeNode(myFile, child2);
             myFile.close();
+            if (ptr_next) {
+                ptr_next->prev = child2->filePosition;
+                child2->next = ptr_next->filePosition;
+                myFile.open(indexfile, ios::binary | ios::out);
+                setWritePos(myFile, ptr_next->filePosition);
+                writeNode(myFile, ptr_next);
+                myFile.close();
+            }
 
             parent->insert_into(position, ptr->registros[mid]);
             parent->children[position] = child1->filePosition;
@@ -237,6 +245,15 @@ private:
             myFile.open(indexfile, ios::app | ios::binary | ios::out);
             setWritePos(myFile, parent->filePosition);
             writeNode(myFile, parent);
+            myFile.close();
+
+            // Pavada
+            myFile.open(indexfile, ios::binary | ios::out | ios::in);
+            setReadPos(myFile, child1->filePosition);
+            auto tmp = readNode(myFile);
+            tmp->next = child2->filePosition;
+            setWritePos(myFile, child1->filePosition);
+            writeNode(myFile, tmp);
             myFile.close();
         }
 
@@ -297,9 +314,9 @@ private:
         writeRegisterArray(stream, nodo->registros, ORDER+2);
         writeUnsignedLong(stream, nodo->count);
         writeInt(stream, nodo->isLeaf);
-        writeInt(stream, nodo->next);
-        writeInt(stream, nodo->prev);
-        writeUnsignedLong(stream, nodo->filePosition);
+        writeLongLong(stream, nodo->next);
+        writeLongLong(stream, nodo->prev);
+        writeLongLong(stream, nodo->filePosition);
     }
 
     static node* readNode(fstream& stream) {
@@ -309,69 +326,16 @@ private:
         nodo->registros = readRegisterArray(stream, ORDER+2);
         nodo->count = readUnsignedLong(stream);
         nodo->isLeaf = readInt(stream);
-        nodo->next = readInt(stream);
-        nodo->prev = readInt(stream);
-        nodo->filePosition = readUnsignedLong(stream);
+        nodo->next = readLongLong(stream);
+        nodo->prev = readLongLong(stream);
+        nodo->filePosition = readLongLong(stream);
         return nodo;
     }
 
 public:
 
     btree() {
-//        fstream file("nodos.dat", fstream::in | fstream::out | fstream::binary | fstream::trunc);
-//
-//        if (file.is_open()) {
-//            // order+1
-//            // order+2
-//            // order+2
-//            node* nodo = new node();
-//            // order=3
-//            nodo->children[0] = 1;
-//            nodo->children[1] = 2;
-//            nodo->children[2] = 3;
-//            nodo->children[3] = 4;
-//            nodo->children[4] = 5;
-//
-//            Registro* r1 = new Registro(69, "Benjamin", 1234, "Pisco");
-//            Registro* r2 = new Registro(70, "Yanli", 5432, "Ica");
-//            Registro* r3 = new Registro(71, "Yeny", 6789, "Arequipa");
-//            Registro* r4 = new Registro(72, "Victor", 9876, "Huacho");
-//            Registro* r5 = new Registro(73, "Jose Maria", 1111, "Lambayeque");
-//
-//            Registro** registers = new Registro*[5];
-//            registers[0] = r1;
-//            registers[1] = r2;
-//            registers[2] = r3;
-//            registers[3] = r4;
-//            registers[4] = r5;
-//
-//            nodo->registros = registers;
-//            nodo->count = ORDER;
-//            nodo->isLeaf = 1;
-//            nodo->next = 12;
-//            nodo->prev = 24;
-//
-//            writeNode(file, nodo);
-//
-//            setReadPos(file, 0);
-//            node* _nodo = readNode(file);
-//            _nodo->print();
-//
-//        }
-//        file.close();
-
         root.isLeaf = 1;
-    }
-
-    void random() {
-        fstream myFile(indexfile, ios::binary | ios::in);
-        setReadPos(myFile, root.children[0]);
-        auto child1 = readNode(myFile);
-        setReadPos(myFile, root.children[1]);
-        auto child2 = readNode(myFile);
-        child1->print();
-        child2->print();
-        myFile.close();
     }
 
     void insert(Registro* registro) {
@@ -630,6 +594,14 @@ private:
         _root->children[0] = child1->filePosition;
         _root->children[1] = child2->filePosition;
         _root->count = 1;
+        // Pavada
+        myFile.open(indexfile, ios::binary | ios::out | ios::in);
+        setReadPos(myFile, child1->filePosition);
+        auto tmp = readNode(myFile);
+        tmp->next = child2->filePosition;
+        setWritePos(myFile, child1->filePosition);
+        writeNode(myFile, tmp);
+        myFile.close();
     }
 
 public:
@@ -681,11 +653,7 @@ public:
             }
             return iterator(nullptr, 0);
         }
-        fstream file(indexfile, fstream::binary | fstream::in);
-        setReadPos(file, ptr->children[index]);
-        node* _nodo = readNode(file);
-        file.close();
-        return find_helper(_nodo, value, ptr);
+        return find_helper(ptr->children[index], value, ptr);
     }
 
 private:

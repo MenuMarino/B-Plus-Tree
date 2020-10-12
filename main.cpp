@@ -29,27 +29,27 @@ int main() {
     bt.insert(r4);
     bt.insert(r5);
     bt.insert(r6);
-    bt.insert(r7);
-    bt.insert(r8);
-    bt.insert(r9);
-    bt.insert(r10);
-    bt.insert(r11);
-    bt.insert(r12);
-    bt.insert(r13);
-    bt.insert(r14);
-    bt.insert(r15);
-    for (int i = 0; i < 15; ++i) {
-        r16->id++;
-        bt.insert(r16);
-    }
+//    bt.insert(r7);
+//    bt.insert(r8);
+//    bt.insert(r9);
+//    bt.insert(r10);
+//    bt.insert(r11);
+//    bt.insert(r12);
+//    bt.insert(r13);
+//    bt.insert(r14);
+//    bt.insert(r15);
+//    for (int i = 0; i < 15; ++i) {
+//        r16->id++;
+//        bt.insert(r16);
+//    }
     bt.print();
 
-    typedef btree<int>::iterator btree_iterator;
+//    typedef btree<int>::iterator btree_iterator;
+//
+//    btree_iterator beg = bt.find(78);
+//    cout << *beg << "\n"; // deberia printear 78
 
-    btree_iterator beg = bt.find(78);
-    cout << *beg << "\n"; // deberia printear 78
-
-    // bt.print_leaves();
+    bt.print_leaves();
     return 0;
 }
 
