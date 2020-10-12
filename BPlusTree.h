@@ -486,7 +486,7 @@ public:
     void print_leaves() {
         node* aux = &root;
         fstream myFile(indexfile, ios::binary | ios::in);
-        while (aux->children[0] != -1) {
+        while (aux->children[0] != 0) {
             setReadPos(myFile, aux->children[0]);
             aux = readNode(myFile);
         }
