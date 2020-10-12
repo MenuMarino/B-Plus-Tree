@@ -8,7 +8,9 @@ using namespace std;
 
 
 int main() {
+
     int c=0;
+    StaticHash a(50);
     fstream rawDataFile, dataFile;
     vector<Registro> aux;
     rawDataFile.open("datosReales.txt", ios::in  | ios::binary);
@@ -17,20 +19,12 @@ int main() {
 
     for (int i = 0; i < size; ++i) {
         rawDataFile.read((char*)&bb,sizeof(bb));
+        a.insert(bb);
         aux.push_back(bb);
-        //bb.print();
     }
 
+    a.saveHash();
 
-    StaticHash a(50);
-    //a.buildHash();
-  // cout << sizeof(Registro);
-    a.loadHash();
-   // a.showData();
-   // cout << cont;
-//
-//    cout << a.hashMap.size();
-//
     for(auto it: aux){
         c++;
         a.search(it.id);

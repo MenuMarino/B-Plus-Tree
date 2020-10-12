@@ -154,9 +154,6 @@ public:
 
     void search(int id){
         int hashpos = id % capacity;
-
-        //cout << getFileSize(dataFileName)/ sizeof(Bucket);
-
         if(hashMap.find(hashpos) == hashMap.end()){
             cout << "No encontrado" << endl;
         }
@@ -187,6 +184,68 @@ public:
         }
 
     }
+    void insert(Registro reg){
+        fstream dataFile;
+        Bucket auxBucket;
+        int hashpos;
+        auto tamanobuckefile = getFileSize(dataFileName)/ sizeof(Bucket); //cantidad de buckets almacenados
+
+        hashpos = reg.id % capacity;
+        // cout << hashpos << endl;
+
+        if(hashMap.find(hashpos) == hashMap.end()){
+
+            //CASO 1: No existe la entrada, se debe crear un nuevo bucket en el dataFile.
+            hashMap.insert({hashpos, tamanobuckefile});//inserto el id hasheado como key y la posición de inserción del nuevo bucket como value
+            // cout << tamanobuckefile << endl;
+            Bucket newBucket;
+            newBucket.add(reg);
+            // newBucket.add(aux[i]);
+            dataFile.open(dataFileName, ios::in | ios::out | ios::binary);
+            dataFile.seekp(0, ios::end);
+            dataFile.write((char*)& newBucket, sizeof(newBucket));
+            dataFile.close();
+        }else{
+
+            auto datafilepos = hashMap[hashpos]; //chapo la posicion logica del bucket q corresponde al registro q quiero insertar
+            dataFile.open(dataFileName, ios::in | ios::out | ios::binary); //leo el bucket correspondiente
+            dataFile.seekg(datafilepos * sizeof(Bucket), ios::beg);
+            dataFile.read((char*)& auxBucket, sizeof(auxBucket));
+            if(auxBucket.size < blockingFactor){
+                //CASO 2 no hay overflow, se lee el bucket, se agrega el registro y se mete de nuevo en el file
+                auxBucket.add(reg);
+                dataFile.seekp(datafilepos * sizeof(Bucket), ios::beg);
+                dataFile.write((char*)& auxBucket, sizeof(auxBucket));
+                dataFile.close();
+            }else{
+                //CASO 3 hay overflow, abro el bucket correspondiente, pongo en el campo overflow la posicion de insercion del nuevo bucket de overflow
+                //y lo appendeo al final del archivo
+                here1:
+                int pos1 = (int)dataFile.tellg() - sizeof(Bucket);
+                if(auxBucket.overflow == -1 && auxBucket.size == BF){
+                    auxBucket.overflow = tamanobuckefile;
+                    dataFile.seekp(pos1, ios::beg);
+                    dataFile.write((char*)& auxBucket, sizeof(auxBucket));
+                    dataFile.seekp(0, ios::end);
+                    Bucket newBucket;
+                    newBucket.add(reg);
+                    dataFile.write((char*)& newBucket, sizeof(newBucket));
+                    dataFile.close();
+                    return;
+
+                }
+                else if(auxBucket.overflow != -1 && auxBucket.size == BF){
+                    dataFile.seekg(auxBucket.overflow * sizeof(Bucket), ios::beg);
+                    dataFile.read((char*)& auxBucket, sizeof(auxBucket));
+                    goto here1;
+                }
+                dataFile.seekp(pos1, ios::beg);
+                auxBucket.add(reg);
+                dataFile.write((char*)& auxBucket, sizeof(auxBucket));
+                dataFile.close();
+            }
+        }
+    }
 
     void buildHash(){
         fstream rawDataFile, dataFile;
@@ -194,98 +253,17 @@ public:
         rawDataFile.open(rawDataFileName, ios::in  | ios::binary);
         int size = getFileSize("datosReales.txt")/sizeof(Registro);
         Registro bb;
-
         for (int i = 0; i < size; ++i) {
             rawDataFile.read((char*)&bb,sizeof(bb));
             aux.push_back(bb);
             //bb.print();
         }
-
         rawDataFile.close();
         Bucket auxBucket;
         int hashpos;
 
-//        for(int  i=0; i<aux.size(); i++){
-//            aux[i].print();
-//        }
-
         for(int  i=0; i<aux.size(); i++){
-           // aux[i].print();
-            auto tamanobuckefile = getFileSize(dataFileName)/ sizeof(Bucket); //cantidad de buckets almacenados
-
-            hashpos = aux[i].id % capacity;
-           // cout << hashpos << endl;
-
-            if(hashMap.find(hashpos) == hashMap.end()){
-
-            //CASO 1: No existe la entrada, se debe crear un nuevo bucket en el dataFile.
-                hashMap.insert({hashpos, tamanobuckefile});//inserto el id hasheado como key y la posición de inserción del nuevo bucket como value
-               // cout << tamanobuckefile << endl;
-                Bucket newBucket;
-                newBucket.add(aux[i]);
-               // newBucket.add(aux[i]);
-                dataFile.open(dataFileName, ios::in | ios::out | ios::binary);
-                dataFile.seekp(0, ios::end);
-                dataFile.write((char*)& newBucket, sizeof(newBucket));
-                dataFile.close();
-            }else{
-
-                auto datafilepos = hashMap[hashpos]; //chapo la posicion logica del bucket q corresponde al registro q quiero insertar
-                dataFile.open(dataFileName, ios::in | ios::out | ios::binary); //leo el bucket correspondiente
-                dataFile.seekg(datafilepos * sizeof(Bucket), ios::beg);
-                dataFile.read((char*)& auxBucket, sizeof(auxBucket));
-
-//                for(auto it: auxBucket.records){
-//                    it.print();
-//                }
-
-                if(auxBucket.size < blockingFactor){
-
-                    //CASO 2 no hay overflow, se lee el bucket, se agrega el registro y se mete de nuevo en el file
-                    auxBucket.add(aux[i]);
-                    //auxBucket.records[1].print();
-                    dataFile.seekp(datafilepos * sizeof(Bucket), ios::beg);
-                    dataFile.write((char*)& auxBucket, sizeof(auxBucket));
-                    dataFile.close();
-                    //cout << "a" << endl;
-                    //cont++;
-
-                }else{
-                    //CASO 3 hay overflow, abro el bucket correspondiente, pongo en el campo overflow la posicion de insercion del nuevo bucket de overflow
-                    //y lo appendeo al final del archivo
-                    here1:
-
-                    int pos1 = (int)dataFile.tellg() - sizeof(Bucket);
-                    if(auxBucket.overflow == -1 && auxBucket.size == BF){
-
-                        auxBucket.overflow = tamanobuckefile;
-                        dataFile.seekp(pos1, ios::beg);
-                        dataFile.write((char*)& auxBucket, sizeof(auxBucket));
-
-                        dataFile.seekp(0, ios::end);
-                        Bucket newBucket;
-                        newBucket.add(aux[i]);
-                        dataFile.write((char*)& newBucket, sizeof(newBucket));
-                        dataFile.close();
-                        continue;
-                    }
-                    else if(auxBucket.overflow != -1 && auxBucket.size == BF){
-                        //cont ++;
-                        dataFile.seekg(auxBucket.overflow * sizeof(Bucket), ios::beg);
-                        dataFile.read((char*)& auxBucket, sizeof(auxBucket));
-
-                        goto here1;
-                    }
-
-                    //cont++;
-                    dataFile.seekp(pos1, ios::beg);
-                    auxBucket.add(aux[i]);
-                    dataFile.write((char*)& auxBucket, sizeof(auxBucket));
-                    
-                    dataFile.close();
-                }
-            }
-
+            insert(aux[i]);
         }
 
         
