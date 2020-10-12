@@ -43,7 +43,13 @@ int main() {
         bt.insert(r16);
     }
     bt.print();
-    bt.print_leaves();
+
+    typedef btree<int>::iterator btree_iterator;
+
+    btree_iterator beg = bt.find(78);
+    cout << *beg << "\n"; // deberia printear 78
+
+    // bt.print_leaves();
     return 0;
 }
 
