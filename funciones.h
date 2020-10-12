@@ -81,13 +81,6 @@ T* readTArray (fstream& stream, int len) {
     return buffer;
 }
 
-// vector<Registro*> registros; 
-// // new Register
-
-// for (auto r : registros) {
-//     bt->insert(r);
-// }
-
 Registro** readRegisterArray(fstream& stream, int len) {
     Registro** registers = new Registro* [len];
 
