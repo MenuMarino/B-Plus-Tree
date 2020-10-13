@@ -74,7 +74,8 @@ Se crea un nuevo bucket, se crea la entrada en el hash, se inserta el registro e
 
 ### B+ Tree v.s Static Hashing
 
-![Cuadro Comparativo](cuadro.png)
+![Cuadro Comparativo 1](cuadro1.png)
+![Cuadro Comparativo 2](cuadro2.png)
 
 - Discusión y Análisis de los resultados experimentales.
 
