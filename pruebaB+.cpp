@@ -28,6 +28,8 @@ int main() {
                readOffset += 35;
 
                // cout << "Registro longitud fija: ";
+               // seteamos el id a mano, ya que nuestro dataset tiene id's repetidos
+               reg->id = i+1;
                registros.push_back(reg);
                // reg->print();
           }
@@ -48,6 +50,8 @@ int main() {
      auto end = chrono::high_resolution_clock::now();
      auto executionTime = chrono::duration_cast<chrono::milliseconds>(end - start);
      cout << "Insertion time for 200 registers: " << executionTime.count() << " ms.\n";
+
+     // bt.print();
 
      /// PRUEBAS DE BUSQUEDA
 
