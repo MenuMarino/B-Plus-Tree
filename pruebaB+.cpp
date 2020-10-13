@@ -80,64 +80,15 @@ struct Registro {
 
 int main() {
 
-     cout << "sizeof(Registro): " << sizeof(Registro) << "\n";
-
-
-     fstream file("pene.csv");
-     fstream fixedLength("datos.dat", fstream::out | fstream::in | fstream::binary | fstream::trunc);
-     char delim = ',';
-
-     if (file.is_open() && fixedLength.is_open()) {
-          string id, name, pin, country;
-          int writeOffset = 0;
-          int readOffset = 0;
-          while (getline(file, id, delim)) {
-               getline(file, name, delim);
-               getline(file, pin, delim);
-               getline(file, country);
-               // if (country[country.length()-1] == '\n') {
-               //      country.pop_back();
-               // }
-
-               // lee el registro del csv
-               Registro registro = Registro(stoi(id), name, stoi(pin), country);
-               cout << "Registro original: ";
-               registro.print();
-
-               // escribe el registro
-               fixedLength.seekp(writeOffset, ios::beg);
-               writeInt(fixedLength, registro.id);
-               writeOffset += sizeof(int);
-               writeCharArray(fixedLength, registro.name, 20);
-               writeOffset += 20;
-               writeShort(fixedLength, registro.pin);
-               writeOffset += sizeof(short);
-               writeCharArray(fixedLength, registro.country, 35);
-               writeOffset += 35;
-
-               Registro reg = Registro();
-               // lee el registro que acabas de escribir
-               fixedLength.seekg(readOffset, ios::beg);
-               reg.id = readInt(fixedLength);
-               readOffset += sizeof(int);
-               strncpy(reg.name, readCharArray(fixedLength, 20), 20);
-               readOffset += 20;
-               reg.pin = readShort(fixedLength);
-               readOffset += sizeof(short);
-               strncpy(reg.country, readCharArray(fixedLength, 35), 35);
-               readOffset += 35;
-
-               // cout << "Registro longitud fija: ";
-               // reg.print();
-          }
-     } else {
-          cout << "No se abrió el archivo.\n";
-     }
+     fstream fixedLength("datos.dat", fstream::in | fstream::binary);
 
      vector<Registro*> registros;
 
+
+     auto start = chrono::high_resolution_clock::now();
      if (fixedLength.is_open()) {
           int readOffset = 0;
+          start = chrono::high_resolution_clock::now();
           for (int i = 0; i < 200; ++i) {
                // leer todo el fixed length
                Registro* reg = new Registro();
@@ -158,8 +109,6 @@ int main() {
           }
 
           // TODO: si sobra tiempo, hacer el iterador en el B+, no creo que sea mucha chamba
-
-          auto start = chrono::high_resolution_clock::now();
           // TODO: por cada registro en el vector 'registros', insertarlo en el B+
           auto end = chrono::high_resolution_clock::now();
           auto executionTime = chrono::duration_cast<chrono::milliseconds>(end - start);
@@ -170,7 +119,6 @@ int main() {
           cout << "Number registers in fixedLength file: " << fileSize/(sizeof(Registro)-3) << "\n";
      }
 
-     file.close();
      fixedLength.close();
 
      return 0;
