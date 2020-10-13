@@ -611,7 +611,11 @@ public:
             if (index < ptr->count) {
                 ++index;
             } else {
-                ptr = ptr->next;
+                fstream file(indexfile, fstream::binary | fstream::in);
+                setReadPos(file, ptr->next);
+                node* _next = readNode(file);
+                file.close();
+                ptr = _next;
                 index = 0;
             }
             return *this;
@@ -647,7 +651,11 @@ public:
             }
             return iterator(nullptr, 0);
         }
-        return find_helper(ptr->children[index], value, ptr);
+        fstream file(indexfile, fstream::binary | fstream::in);
+        setReadPos(file, ptr->children[index]);
+        node* _nodo = readNode(file);
+        file.close();
+        return find_helper(_nodo, value, ptr);
     }
 
 private:

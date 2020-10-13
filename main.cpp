@@ -1,5 +1,7 @@
 #include <vector>
 #include <iostream>
+#include <cassert>
+
 #include "BPlusTree.h"
 
 using namespace std;
@@ -44,10 +46,21 @@ int main() {
     }
     bt.print();
 
-//    typedef btree<int>::iterator btree_iterator;
-//
-//    btree_iterator beg = bt.find(78);
-//    cout << *beg << "\n"; // deberia printear 78
+    typedef btree<int>::iterator btree_iterator;
+
+    btree_iterator beg = bt.find(78);
+    cout << *beg << "\n";
+
+    beg.ptr->registros[beg.index]->print();
+
+    assert (beg.ptr->registros[beg.index]->id == 78);
+
+    btree_iterator result = bt.find(82);
+    cout << *result << "\n";
+
+    // result.ptr->registros[result.index]->print();
+
+    // assert (result.ptr->registros[0]->id == 87);
 
     return 0;
 }
