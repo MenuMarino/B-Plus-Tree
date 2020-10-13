@@ -11,6 +11,7 @@
 
 using namespace std;
 int cont =0;
+int readcant = 0, writecant=0;
 
 
 struct Registro{
@@ -167,6 +168,7 @@ public:
             data.open(dataFileName, ios::in | ios::out | ios::binary);
             data.seekg(filepos * sizeof(auxBucket), ios::beg);
             data.read((char*)& auxBucket, sizeof(auxBucket));
+            readcant++;
             data.close();
             for(int i=0; i<auxBucket.size; ++i){
                 //auxBucket.records[i].print();
@@ -207,18 +209,21 @@ public:
             dataFile.seekp(0, ios::end);
             dataFile.write((char*)& newBucket, sizeof(newBucket));
             dataFile.close();
+            writecant++;
         }else{
 
             auto datafilepos = hashMap[hashpos]; //chapo la posicion logica del bucket q corresponde al registro q quiero insertar
             dataFile.open(dataFileName, ios::in | ios::out | ios::binary); //leo el bucket correspondiente
             dataFile.seekg(datafilepos * sizeof(Bucket), ios::beg);
             dataFile.read((char*)& auxBucket, sizeof(auxBucket));
+            readcant++;
             if(auxBucket.size < blockingFactor){
                 //CASO 2 no hay overflow, se lee el bucket, se agrega el registro y se mete de nuevo en el file
                 auxBucket.add(reg);
                 dataFile.seekp(datafilepos * sizeof(Bucket), ios::beg);
                 dataFile.write((char*)& auxBucket, sizeof(auxBucket));
                 dataFile.close();
+                writecant++;
             }else{
                 //CASO 3 hay overflow, abro el bucket correspondiente, pongo en el campo overflow la posicion de insercion del nuevo bucket de overflow
                 //y lo appendeo al final del archivo
@@ -233,18 +238,21 @@ public:
                     newBucket.add(reg);
                     dataFile.write((char*)& newBucket, sizeof(newBucket));
                     dataFile.close();
+                    writecant++;
                     return;
 
                 }
                 else if(auxBucket.overflow != -1 && auxBucket.size == BF){
                     dataFile.seekg(auxBucket.overflow * sizeof(Bucket), ios::beg);
                     dataFile.read((char*)& auxBucket, sizeof(auxBucket));
+                    readcant++;
                     goto here1;
                 }
                 dataFile.seekp(pos1, ios::beg);
                 auxBucket.add(reg);
                 dataFile.write((char*)& auxBucket, sizeof(auxBucket));
                 dataFile.close();
+                writecant++;
             }
         }
     }

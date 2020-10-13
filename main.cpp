@@ -35,25 +35,27 @@ int main() {
 
     auto start = chrono::high_resolution_clock::now();
 
- //   for(auto it: aux){
-        //a.insert(it);
-//        c++;
-//        if(!a.search(it.id)){
-//            cout << "NO ENCONTRADO";
-//            break;
-//        }
- //   }
+    for(auto it: aux){
+      //  a.insert(it);
+      //  c++;
+        if(!a.search(it.id)){
+            cout << "NO ENCONTRADO";
+            break;
+        }
+    }
 
    //  a.insert( aux[ind]);
 
-    if(!a.search(aux[ind].id)){
-        cout<< "NO ENCONTRADO";
-    }
+//    if(!a.search(aux[ind].id)){
+//        cout<< "NO ENCONTRADO";
+//    }
 
     // busqueda de los 200 elementos
     auto end = chrono::high_resolution_clock::now();
     auto executionTime = chrono::duration_cast<chrono::milliseconds>(end - start);
     cout << "Execution time: " << executionTime.count() << " ms.\n";
+
+    cout << readcant << " " << writecant;
 
    // cout <<c;
 
