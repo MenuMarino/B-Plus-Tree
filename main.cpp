@@ -24,6 +24,21 @@ int main() {
     auto r14 = new Registro(82, "Victor", 9876, "Huacho");
     auto r15 = new Registro(83, "Jose Maria", 1111, "Lambayeque");
     auto r16 = new Registro(84, "Jose Maria", 1111, "Lambayeque");
+    auto r17 = new Registro(85, "Jose Maria", 1111, "Lambayeque");
+    auto r18 = new Registro(86, "Jose Maria", 1111, "Lambayeque");
+    auto r19 = new Registro(87, "Jose Maria", 1111, "Lambayeque");
+    auto r20 = new Registro(88, "Jose Maria", 1111, "Lambayeque");
+    auto r21 = new Registro(89, "Jose Maria", 1111, "Lambayeque");
+    auto r22 = new Registro(90, "Jose Maria", 1111, "Lambayeque");
+    auto r23 = new Registro(91, "Jose Maria", 1111, "Lambayeque");
+    auto r24 = new Registro(92, "Jose Maria", 1111, "Lambayeque");
+    auto r25 = new Registro(93, "Jose Maria", 1111, "Lambayeque");
+    auto r26 = new Registro(94, "Jose Maria", 1111, "Lambayeque");
+    auto r27 = new Registro(95, "Jose Maria", 1111, "Lambayeque");
+    auto r28 = new Registro(96, "Jose Maria", 1111, "Lambayeque");
+    auto r29 = new Registro(97, "Jose Maria", 1111, "Lambayeque");
+    auto r30 = new Registro(98, "Jose Maria", 1111, "Lambayeque");
+    auto r31 = new Registro(99, "Jose Maria", 1111, "Lambayeque");
 
     bt.insert(r1);
     bt.insert(r2);
@@ -40,23 +55,33 @@ int main() {
     bt.insert(r13);
     bt.insert(r14);
     bt.insert(r15);
-    for (int i = 0; i < 15; ++i) {
-        r16->id++;
-        bt.insert(r16);
-    }
+    bt.insert(r16);
+    bt.insert(r17);
+    bt.insert(r18);
+    bt.insert(r19);
+    bt.insert(r20);
+    bt.insert(r21);
+    bt.insert(r22);
+    bt.insert(r23);
+    bt.insert(r24);
+    bt.insert(r25);
+    bt.insert(r26);
+    bt.insert(r27);
+    bt.insert(r28);
+    bt.insert(r29);
+    bt.insert(r30);
     bt.print();
 
     typedef btree<int>::iterator btree_iterator;
 
-    btree_iterator beg = bt.find(78);
-    cout << *beg << "\n";
+//    btree_iterator beg = bt.find(78);
 
-    beg.ptr->registros[beg.index]->print();
+//    beg.ptr->registros[beg.index]->print();
+//    assert (beg.ptr->registros[beg.index]->id == 78);
 
-    assert (beg.ptr->registros[beg.index]->id == 78);
-
-    btree_iterator result = bt.find(82);
+    btree_iterator result = bt.find(87);
     cout << *result << "\n";
+    result.ptr->registros[result.index]->print();
 
     // result.ptr->registros[result.index]->print();
 

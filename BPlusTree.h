@@ -48,10 +48,10 @@ private:
         size_t* children; // Hijos (posicion en el archivo de los hijos)
         Registro** registros; // solo los nodos hoja tienen esto
         size_t count{0}; // numero de keys que el nodo tiene
-        int isLeaf; // el nodo es hoja?
+        int isLeaf{0}; // el nodo es hoja?
         long long next{-1}; // si el nodo es hoja, un puntero (posicion en el archivo de mi hermano derecho)
         long long prev{-1}; // si el nodo es hoja, un puntero (posicion en el archivo de mi hermano izquierdo)
-        long long filePosition = -1; // posicion en el file
+        long long filePosition{-1}; // posicion en el file
         
         node() {
             data = (T*) calloc (ORDER + 1, sizeof(T));
@@ -641,8 +641,16 @@ public:
 
     iterator find_helper(node* ptr, const T& value, node* ptr_parent) {
         size_t index = 0;
-        while (ptr->data[index] < value && index < ptr->count) {
-            ++index;
+        if (ptr->isLeaf) {
+            // < porque si es igual se debe detener
+            while (ptr->data[index] < value && index < ptr->count) {
+                ++index;
+            }
+        } else {
+            // <= porque si es igual ESE valor esta en el siguiente indice
+            while (ptr->data[index] <= value && index < ptr->count) {
+                ++index;
+            }
         }
 
         if (ptr->isLeaf) {
