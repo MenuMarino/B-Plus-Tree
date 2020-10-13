@@ -21,11 +21,13 @@ int main() {
 
     for (int i = 0; i < size; ++i) {
         rawDataFile.read((char*)&bb,sizeof(bb));
-        a.insert(bb);
+       // a.insert(bb);
         aux.push_back(bb);
     }
 
- //   a.saveHash();
+   // a.saveHash();
+
+   a.loadHash();
 
     srand(time(0));
 
