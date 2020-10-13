@@ -79,13 +79,11 @@ struct Registro {
 };
 
 int main() {
-
      fstream fixedLength("datos.dat", fstream::in | fstream::binary);
 
      vector<Registro*> registros;
-
-
      auto start = chrono::high_resolution_clock::now();
+
      if (fixedLength.is_open()) {
           int readOffset = 0;
           start = chrono::high_resolution_clock::now();
@@ -108,18 +106,29 @@ int main() {
                reg->print();
           }
 
-          // TODO: si sobra tiempo, hacer el iterador en el B+, no creo que sea mucha chamba
-          // TODO: por cada registro en el vector 'registros', insertarlo en el B+
           auto end = chrono::high_resolution_clock::now();
           auto executionTime = chrono::duration_cast<chrono::milliseconds>(end - start);
-          cout << "Execution time: " << executionTime.count() << " ms.\n";
-          fixedLength.seekg(0, ios::end);
-          int fileSize = fixedLength.tellg();
-          cout << "Fixed length size in bytes: " << fileSize << "\n";
-          cout << "Number registers in fixedLength file: " << fileSize/(sizeof(Registro)-3) << "\n";
+          cout << "Insertion time for 200 registers: " << executionTime.count() << " ms.\n";
      }
 
      fixedLength.close();
+     
+     // TODO: poner el typedef e incluir el header del B+
+
+     start = chrono::high_resolution_clock::now();
+
+     for (int i = 0; i < 200; ++i) {
+          unsigned id = registros[i]->id;
+
+          btree_iterator node = bt.find(id);
+
+          assert(node.ptr->registros[node.index]->id == id);
+     }
+
+     auto end = chrono::high_resolution_clock::now();
+     auto executionTime = chrono::duration_cast<chrono::milliseconds>(end - start);
+
+     cout << "Search time for 200 registers: " << executionTime.count() << " ms.\n";
 
      return 0;
 }
