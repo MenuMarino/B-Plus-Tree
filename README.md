@@ -81,15 +81,18 @@ Se crea un nuevo bucket, se crea la entrada en el hash, se inserta el registro e
 
 ### Discusión y Análisis
 
+Como dato curioso, inicialmente corrimos las pruebas con el static hash, en una computadora con un i3 y 1TB de HDD, y corrimos las pruebas del B+ en una computadora con un i9 y un 1 TB de SDD. Al ver los resultados, el static hash tenía 10 veces menos accesos a disco que el B+ en la inserción; sin embargo, el B+ corría 10 veces más rápido que el static hash. Esto nos pareció raro, ya que en teoría el B+ debería demorarse más dados los mayores accesos a disco, pero luego nos dimos cuenta que era porque el static hash estaba en HDD y el B+ estaba en un SSD con NVMe, lo cual explicaba los resultados.
+
 En el primer cuadro, podemos ver el tiempo de ejecución de insertar 1 y 200 registros al B+ y al Static Hash. En el segundo cuadro, podemos ver el número de lecturas y escrituras al insertar y buscar 200 registros en el B+ y en el Static Hash.
 
 Como el B+ usa principalmente dos funciones utilitarias llamadas **readNode** y **writeNode**, las cuales leen y escriben un nodo en disco, respectivamente, decidimos crear dos variables globales llamadas **reads** y **writes**. En la función **readNode**, aumentamos **reads** en uno, ya que es un acceso a disco. Un caso análogo ocurre con **writeNode** y **writes**. La razón por la que hacemos esto, es que en teoría, solo se tiene que contar las lecturas y escrituras de nodos, ya que cada nodo ocupa un bloque de memoria.
 
-(describir método para medir **reads** y **writes** en el static hash).
+Para contabilizar los reads y writes se crean contadores globales al inicio del programa. Cada vez que se hace una operación de write en el método **insert()** se suma 1 al contador, es importante decir que, cuando existe un overflow y se tiene que escribir sobre otro bucket, el contador también aumenta, pues eso cuenta como un write. Para los reads, se hace de la misma manera, pero esta vez contabilizándolos en los métodos **search()** e **insert()**, pues los dos tienen lecturas. Cada vez que se hace un read para alguno de los posibles escenarios en estas operaciones, se suma uno al contador, es decir, también cuenta lecturas extra por overflow.
 
 La primera diferencia que podemos ver es que el número de lecturas en la búsqueda del B+ es menor al número de lecturas en la inserción. Esto se debe a que la inserción tiene que hacer splits, los cuales leen nodos de más para poder modificar sus atributos de tal manera que se mantenga la integridad de la estructura de datos.
 
-(analizar más cosas del cuadro)
+Como se puede ver el Static Hash es más rápido que el B+ tree, eso se da por la cantidad de registros que se van a insertar y por el factor de bloque y número de buckets que tiene el static hash. Mientras se van aumentando la cantidad de registros el tiempo de ejecución del static hash va a aumentar, haciendo que el B+ tree sea mejor. Cabe resaltar que el factor de bloque y número de buckets son factores que afectan al tiempo de ejecución del static hash, ya que un factor de bloque de 1 por ejemplo, sería lo mismo que tener un linked list en disco, lo cual baja el performance, mientras un factor de bloque alto es bueno ya que de una lectura de bloque lees varios registros.
+
 
 ## Observaciones
 
