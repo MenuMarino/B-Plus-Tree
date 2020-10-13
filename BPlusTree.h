@@ -7,10 +7,9 @@
 #include <cstring>
 #include "funciones.h"
 
-
 int ORDER = 3;
 
-const std::string indexfile = "../index.dat";
+const std::string indexfile = "index.dat";
 #define FILESIZE getFileSize(indexfile)
 
 struct Registro {
@@ -146,7 +145,6 @@ private:
 
         void split(size_t position) {
             // leaf nodes / index nodes
-
             node* parent = this;
             fstream myFile;
             myFile.open(indexfile, ios::binary | ios::in | ios::out);
@@ -165,8 +163,6 @@ private:
             myFile.close();
 
             // 'ptr' es el nodo que va a ser spliteado
-
-            // TODO: reuse ptr buffer 
             node* child1 = new node();
             node* child2 = new node();
             child1->filePosition = FILESIZE;
@@ -215,10 +211,7 @@ private:
             if (ptr_prev) {
                 child1->prev = ptr_prev->filePosition;
                 ptr_prev->next = child1->filePosition;
-                myFile.open(indexfile, ios::binary | ios::out);
-                setWritePos(myFile, ptr_prev->filePosition);
-                writeNode(myFile, ptr_prev);
-                myFile.close();
+                parent->children[position - 1] = ptr_prev->filePosition;
             }
 
             myFile.open(indexfile, ios::app | ios::binary | ios::out);
@@ -232,10 +225,7 @@ private:
             if (ptr_next) {
                 ptr_next->prev = child2->filePosition;
                 child2->next = ptr_next->filePosition;
-                myFile.open(indexfile, ios::binary | ios::out);
-                setWritePos(myFile, ptr_next->filePosition);
-                writeNode(myFile, ptr_next);
-                myFile.close();
+                parent->children[position + 2] = ptr_next->filePosition;
             }
 
             parent->insert_into(position, ptr->registros[mid]);
@@ -465,8 +455,12 @@ public:
             if (leave->next != -1) {
                 std::cout << " <-> ";
             }
-            setReadPos(myFile, leave->next);
-            leave = readNode(myFile);
+            if (leave->next != -1) {
+                setReadPos(myFile, leave->next);
+                leave = readNode(myFile);
+            } else {
+                break;
+            }
         }
         std::cout << "\n";
         myFile.close();
