@@ -152,10 +152,11 @@ public:
 
     }
 
-    void search(int id){
+    bool search(int id){
         int hashpos = id % capacity;
         if(hashMap.find(hashpos) == hashMap.end()){
-            cout << "No encontrado" << endl;
+          //  cout << "No encontrado" << endl;
+          return false;
         }
         else{
 
@@ -170,15 +171,16 @@ public:
             for(int i=0; i<auxBucket.size; ++i){
                 //auxBucket.records[i].print();
                 if(auxBucket.records[i].id == id){
-                    auxBucket.records[i].print();
-                    return;
+                    //auxBucket.records[i].print();
+                    return true;
                 }
             }
             if(auxBucket.overflow != -1){
                 filepos = auxBucket.overflow;
                 goto here;
             }else{
-                cout <<  "No encontrado" << endl;
+              //  cout <<  "No encontrado" << endl;
+              return false;
             }
 
         }

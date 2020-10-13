@@ -2,12 +2,14 @@
 #include <iostream>
 #include <cstring>
 #include "BPlusTree.h"
-#include "ExtendibleHash.h"
+#include <chrono>
+#include "StaticHash.h"
 
 using namespace std;
 
 
 int main() {
+
 
     int c=0;
     StaticHash a(50);
@@ -23,14 +25,37 @@ int main() {
         aux.push_back(bb);
     }
 
-    a.saveHash();
+ //   a.saveHash();
 
-    for(auto it: aux){
-        c++;
-        a.search(it.id);
+    srand(time(0));
+
+    int ind = rand() % 200;
+
+  //  cout << ind;
+
+    auto start = chrono::high_resolution_clock::now();
+
+ //   for(auto it: aux){
+        //a.insert(it);
+//        c++;
+//        if(!a.search(it.id)){
+//            cout << "NO ENCONTRADO";
+//            break;
+//        }
+ //   }
+
+   //  a.insert( aux[ind]);
+
+    if(!a.search(aux[ind].id)){
+        cout<< "NO ENCONTRADO";
     }
 
-    cout <<c;
+    // busqueda de los 200 elementos
+    auto end = chrono::high_resolution_clock::now();
+    auto executionTime = chrono::duration_cast<chrono::milliseconds>(end - start);
+    cout << "Execution time: " << executionTime.count() << " ms.\n";
+
+   // cout <<c;
 
 
 
