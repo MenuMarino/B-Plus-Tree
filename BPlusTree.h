@@ -8,6 +8,8 @@
 #include "funciones.h"
 
 int ORDER = 3;
+int reads = 0;
+int writes = 0;
 
 const std::string indexfile = "index.dat";
 #define FILESIZE getFileSize(indexfile)
@@ -299,6 +301,7 @@ private:
     };
 
     static void writeNode(fstream& stream, node* nodo) {
+        ++writes;
         writeTArray<T>(stream, nodo->data, ORDER+1);
         writeTArray<size_t>(stream, nodo->children, ORDER+2);
         writeRegisterArray(stream, nodo->registros, ORDER+2);
@@ -310,6 +313,7 @@ private:
     }
 
     static node* readNode(fstream& stream) {
+        ++reads;
         node* nodo = new node();
         nodo->data = readTArray<T>(stream, ORDER+1);
         nodo->children = readTArray<size_t>(stream, ORDER+2);

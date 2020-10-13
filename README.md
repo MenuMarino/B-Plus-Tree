@@ -81,7 +81,15 @@ Se crea un nuevo bucket, se crea la entrada en el hash, se inserta el registro e
 
 ### Discusión y Análisis
 
-(interpretar los resultados de la tabla anterior)
+En el primer cuadro, podemos ver el tiempo de ejecución de insertar 1 y 200 registros al B+ y al Static Hash. En el segundo cuadro, podemos ver el número de lecturas y escrituras al insertar y buscar 200 registros en el B+ y en el Static Hash.
+
+Como el B+ usa principalmente dos funciones utilitarias llamadas **readNode** y **writeNode**, las cuales leen y escriben un nodo en disco, respectivamente, decidimos crear dos variables globales llamadas **reads** y **writes**. En la función **readNode**, aumentamos **reads** en uno, ya que es un acceso a disco. Un caso análogo ocurre con **writeNode** y **writes**. La razón por la que hacemos esto, es que en teoría, solo se tiene que contar las lecturas y escrituras de nodos, ya que cada nodo ocupa un bloque de memoria.
+
+(describir método para medir **reads** y **writes** en el static hash).
+
+La primera diferencia que podemos ver es que el número de lecturas en la búsqueda del B+ es menor al número de lecturas en la inserción. Esto se debe a que la inserción tiene que hacer splits, los cuales leen nodos de más para poder modificar sus atributos de tal manera que se mantenga la integridad de la estructura de datos.
+
+(analizar más cosas del cuadro)
 
 ## Observaciones
 

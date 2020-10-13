@@ -50,6 +50,10 @@ int main() {
      auto end = chrono::high_resolution_clock::now();
      auto executionTime = chrono::duration_cast<chrono::milliseconds>(end - start);
      cout << "Insertion time for 200 registers: " << executionTime.count() << " ms.\n";
+     cout << "Reads: " << reads << "\n";
+     cout << "Writes: " << writes << "\n";
+     reads = 0;
+     writes = 0;
 
      // bt.print();
 
@@ -69,6 +73,8 @@ int main() {
      executionTime = chrono::duration_cast<chrono::milliseconds>(end - start);
 
      cout << "Search time for 200 registers: " << executionTime.count() << " ms.\n";
+     cout << "Reads: " << reads << "\n";
+     cout << "Writes: " << writes << "\n";
 
      return 0;
 }
