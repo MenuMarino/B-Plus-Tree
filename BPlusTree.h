@@ -621,8 +621,8 @@ public:
             return *this;
         }
 
-        T& operator*() {
-            return ptr->data[index];
+        Registro* operator*() {
+            return ptr->registros[index];
         } 
 
         bool operator==(const iterator& i) {

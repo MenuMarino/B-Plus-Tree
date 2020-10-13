@@ -74,18 +74,15 @@ int main() {
 
     typedef btree<int>::iterator btree_iterator;
 
-//    btree_iterator beg = bt.find(78);
-
-//    beg.ptr->registros[beg.index]->print();
-//    assert (beg.ptr->registros[beg.index]->id == 78);
+    btree_iterator beg = bt.find(78);
+    // beg.ptr->registros[beg.index]->print();
+    (*beg)->print();
+    assert (beg.ptr->registros[beg.index]->id == 78);
 
     btree_iterator result = bt.find(87);
-    cout << *result << "\n";
-    result.ptr->registros[result.index]->print();
-
     // result.ptr->registros[result.index]->print();
-
-    // assert (result.ptr->registros[0]->id == 87);
+    (*result)->print();
+    assert (result.ptr->registros[0]->id == 87);
 
     return 0;
 }
