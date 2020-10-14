@@ -6,6 +6,11 @@ Base de Datos 2
 * Gabriel Spranger
 * Rodrigo Céspedes
 
+## Observaciones
+
+* Compilar con C++ 17. y cambiar de branch a ExtendibleHashing (git checkout feature/ExtendibleHashing) (en realidad debería ser Static Hashing) para probar el static hash.
+
+
 ## Introducción
 
 El objetivo del proyecto es desarrollar dos estructuras de indexación que son ampliamente usadas en el campo de las bases de datos: el árbol B+  y el static hashing. Para esto, trabajaremos sobre un dominio de datos que generamos nosotros que consisten en cuatro campos: **ID** (unsigned), **nombre** (char \[20\]), **PIN** (short), **país** (char \[35\]). Este archivo es de longitud fija. Finalmente, los resultados que deseamos obtener es que ambas estructuras de indexación hagan la búsqueda de los registros más rápida y que reduzcan el número de accesos a memoria secundaria.
@@ -94,8 +99,5 @@ La primera diferencia que podemos ver es que el número de lecturas en la búsqu
 Como se puede ver el Static Hash es más rápido que el B+ tree, eso se da por la cantidad de registros que se van a insertar y por el factor de bloque y número de buckets que tiene el static hash. Mientras se van aumentando la cantidad de registros el tiempo de ejecución del static hash va a aumentar, haciendo que el B+ tree sea mejor. Cabe resaltar que el factor de bloque y número de buckets son factores que afectan al tiempo de ejecución del static hash, ya que un factor de bloque de 1 por ejemplo, sería lo mismo que tener un linked list en disco, lo cual baja el performance, mientras un factor de bloque alto es bueno ya que de una lectura de bloque lees varios registros.
 
 
-## Observaciones
-
-* Compilar con C++ 17.
 
 
