@@ -39,9 +39,9 @@ Tenemos dos tipos funciones que se encargan de la inserción: **insert_into** y 
 
 ### Static Hashing
 
-El static hashing es una técnica utilizada para almacenar datos y llevar un registro de posiciones para acceso rápido en un set de datos no ordenados. Permite accesos en O(1 + ko), k siendo el factor de bloque de los buckets que vamos a utilizar y o siendo el numero de buckets de overflow que existan para esa llave hasheada. Este método de indexación consta de una tabla hash, como key se tiene la llave del registro (pasada por una función hash) y como value se tiene la dirección lógica del bucket que le corresponde a esa llave hasheada. 
+El static hashing es una técnica utilizada para almacenar datos y llevar un registro de posiciones para acceso rápido en un set de datos no ordenados. Permite accesos en O(1 + k), k siendo el número de buckets que se cargan a memoria (se toma en cuenta el overflow). Este método de indexación consta de una tabla hash, como key se tiene la llave del registro (pasada por una función hash) y como value se tiene la dirección lógica del bucket que le corresponde a esa llave hasheada. 
 
-Cada Bucket tiene k espacios para almacenar registros y un puntero de overflow, cuando existe overflow, se revisa si es que existen buckets linkeados con espacio disponible, si no es así, se crea uno nuevo y se inserta ahí, los punteros de overflow se actualizan en cada iteración.
+Cada Bucket tiene n espacios para almacenar registros y un puntero de overflow, cuando existe overflow, se revisa si es que existen buckets linkeados con espacio disponible, si no es así, se crea uno nuevo y se inserta ahí, los punteros de overflow se actualizan en cada iteración.
 
 La tabla hash también se guarda en disco al terminar el programa, se guarda una lista de keys y values y se reconstruye cuando se inicia el programa.
 
@@ -53,7 +53,7 @@ Para la búsqueda se provee una llave. Esta llave es hasheada aplicando módulo 
 Paso 1:
 Se busca dentro del hash, si es que no existe una entrada, se imprime en pantalla que no ha sido encontrado, pero si si existe una entrada accede al archivo de buckets en la posición dada por el value de esa entrada del hash, construye el bucket y va al paso 2.
 Paso 2:
-Se revisa dentro de el bucket de manera lineal O(k) si es que existe un registro con la llave provista . Si es que lo encuentra, imprime el valor, si es que no, se va al paso 3.
+Se revisa dentro de el bucket de manera lineal si es que existe un registro con la llave provista . Si es que lo encuentra, imprime el valor, si es que no, se va al paso 3.
 Paso 3:
 Se revisa si existe un puntero de overflow con una dirección válida en el bucket, si es que no existe, se imprime en pantalla que no ha sido encontrado, si es que si, se carga el bucket de overflow en memoria accediendo a su dirección y se regresa al paso 2.
 
