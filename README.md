@@ -1,6 +1,6 @@
 # Proyecto 1
 Base de Datos 2
-Link de la exposición: https://youtu.be/NmioLjTUvss
+Link de la exposición: https://drive.google.com/drive/folders/178o7HWE7cUUlo1G2w0sUVl1uv7nw4yyr?usp=sharing
 
 ## Integrantes
 * Benjamín Díaz
